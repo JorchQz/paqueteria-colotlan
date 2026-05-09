@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Paquetería Colotlán</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0D1B3E;
+    --navy-light: #1a2d5a;
+    --orange: #F97316;
+    --orange-light: #FB923C;
+    --cream: #F8F5F0;
+    --white: #FFFFFF;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-500: #6B7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --green: #16A34A;
+    --green-light: #DCFCE7;
+    --red: #DC2626;
+    --red-light: #FEE2E2;
+    --blue: #2563EB;
+    --blue-light: #DBEAFE;
+    --yellow: #D97706;
+    --yellow-light: #FEF3C7;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-lg: 20px;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--gray-900);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--navy);
+    padding: 16px 20px 20px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .header-logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 36px; height: 36px; background: var(--orange);
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .logo-text { font-family: var(--font-display); font-weight: 800; color: var(--white); font-size: 16px; line-height: 1.1; }
+  .logo-sub { color: var(--orange); font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+  .header-badge {
+    background: rgba(255,255,255,0.1); border-radius: 20px;
+    padding: 4px 10px; font-size: 11px; color: rgba(255,255,255,0.7);
+    font-family: var(--font-body);
+  }
+  .header-nav {
+    display: flex; gap: 4px; margin-top: 14px;
+    background: rgba(255,255,255,0.08); border-radius: 12px; padding: 4px;
+  }
+  .nav-tab {
+    flex: 1; padding: 8px 4px; border: none; background: transparent;
+    color: rgba(255,255,255,0.5); font-family: var(--font-body); font-size: 12px;
+    font-weight: 500; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+  }
+  .nav-tab.active { background: var(--orange); color: var(--white); }
+  .nav-tab span:first-child { font-size: 16px; }
+
+  /* ── SCROLL CONTENT ── */
+  .scroll-content { flex: 1; overflow-y: auto; padding: 20px 16px 100px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); padding: 20px; margin-bottom: 14px;
+  }
+  .card-title {
+    font-family: var(--font-display); font-weight: 700; font-size: 15px;
+    color: var(--navy); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+  .field-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--gray-500);
+  }
+  .field-input {
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+    padding: 10px 12px; font-family: var(--font-body); font-size: 14px;
+    color: var(--gray-900); background: var(--gray-50);
+    transition: border-color 0.2s, background 0.2s; outline: none; width: 100%;
+  }
+  .field-input:focus { border-color: var(--navy); background: var(--white); }
+  .field-input::placeholder { color: var(--gray-400); }
+  .field-hint { font-size: 11px; color: var(--orange); font-weight: 500; }
+
+  /* ── SELECT ── */
+  select.field-input { appearance: none; cursor: pointer; }
+
+  /* ── CHECKBOX ESPECIAL ── */
+  .discount-box {
+    border: 2px dashed var(--green); border-radius: var(--radius-sm);
+    padding: 12px 14px; display: flex; align-items: center; gap: 12px;
+    background: var(--green-light); cursor: pointer; margin-bottom: 16px;
+  }
+  .discount-box input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--green); cursor: pointer; }
+  .discount-label { font-size: 12px; font-weight: 600; color: var(--green); line-height: 1.3; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    width: 100%; padding: 15px; border: none; border-radius: var(--radius);
+    font-family: var(--font-display); font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+    justify-content: center; gap: 8px; letter-spacing: 0.3px;
+  }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:active { transform: scale(0.98); background: var(--navy-light); }
+  .btn-orange { background: var(--orange); color: var(--white); }
+  .btn-orange:active { transform: scale(0.98); }
+  .btn-outline {
+    background: transparent; border: 2px solid var(--navy);
+    color: var(--navy); padding: 13px;
+  }
+  .btn-green { background: var(--green); color: var(--white); }
+  .btn-sm {
+    width: auto; padding: 8px 16px; font-size: 13px; border-radius: 8px;
+  }
+
+  /* ── LOADING ── */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(13,27,62,0.85);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 999; backdrop-filter: blur(4px);
+  }
+  .loading-spinner {
+    width: 48px; height: 48px; border: 3px solid rgba(255,255,255,0.2);
+    border-top-color: var(--orange); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin-bottom: 16px;
+  }
+  .loading-text { color: var(--white); font-family: var(--font-display); font-size: 14px; font-weight: 600; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── TARIFA CARD ── */
+  .tarifa-card {
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 10px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 14px;
+    background: var(--white);
+  }
+  .tarifa-card:hover, .tarifa-card.selected {
+    border-color: var(--orange); background: #FFF8F3;
+    box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
+  }
+  .tarifa-logo {
+    width: 52px; height: 36px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 800; letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .logo-estafeta { background: #CC0000; color: white; }
+  .logo-dhl { background: #FFCC00; color: #D40511; }
+  .logo-fedex { background: white; color: #4D148C; border: 1px solid #eee; }
+  .logo-ups { background: #351C15; color: #FFB500; }
+  .tarifa-info { flex: 1; }
+  .tarifa-servicio { font-size: 12px; color: var(--gray-500); text-transform: capitalize; }
+  .tarifa-carrier { font-family: var(--font-display); font-weight: 700; font-size: 14px; color: var(--navy); }
+  .tarifa-tiempo { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+  .tarifa-precio {
+    font-family: var(--font-display); font-weight: 800; font-size: 20px;
+    color: var(--orange); flex-shrink: 0;
+  }
+
+  /* ── MODO ENTREGA ── */
+  .entrega-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .entrega-card {
+    border: 2px solid var(--gray-200); border-radius: var(--radius);
+    padding: 16px 12px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--white);
+  }
+  .entrega-card.selected { border-color: var(--orange); background: #FFF8F3; }
+  .entrega-icon { font-size: 28px; margin-bottom: 8px; }
+  .entrega-title { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--navy); }
+  .entrega-desc { font-size: 11px; color: var(--gray-500); margin-top: 4px; line-height: 1.3; }
+  .entrega-badge {
+    display: inline-block; margin-top: 6px; padding: 2px 8px;
+    border-radius: 20px; font-size: 10px; font-weight: 600;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    display: flex; align-items: center; gap: 10px; margin: 16px 0;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--gray-200);
+  }
+  .divider-label {
+    font-size: 11px; font-weight: 600; color: var(--gray-400);
+    letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap;
+  }
+
+  /* ── STEP INDICATOR ── */
+  .step-bar {
+    display: flex; align-items: center; padding: 12px 20px;
+    background: var(--navy); gap: 0;
+  }
+  .step-item { display: flex; align-items: center; flex: 1; }
+  .step-circle {
+    width: 26px; height: 26px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 11px;
+    font-weight: 700; flex-shrink: 0; transition: all 0.3s;
+    font-family: var(--font-display);
+  }
+  .step-circle.done { background: var(--green); color: white; }
+  .step-circle.active { background: var(--orange); color: white; }
+  .step-circle.pending { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); }
+  .step-line { flex: 1; height: 2px; background: rgba(255,255,255,0.15); margin: 0 4px; }
+  .step-line.done { background: var(--green); }
+
+  /* ── CONFIRMACIÓN ── */
+  .confirm-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    padding: 32px 24px; text-align: center; color: white;
+  }
+  .confirm-icon { font-size: 56px; margin-bottom: 12px; }
+  .confirm-title { font-family: var(--font-display); font-size: 22px; font-weight: 800; }
+  .confirm-subtitle { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 6px; }
+  .guia-box {
+    background: var(--orange); border-radius: var(--radius);
+    padding: 16px; text-align: center; margin-bottom: 14px;
+  }
+  .guia-label { font-size: 11px; color: rgba(255,255,255,0.8); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .guia-numero { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: white; letter-spacing: 2px; }
+  .detail-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-key { font-size: 13px; color: var(--gray-500); }
+  .detail-val { font-size: 13px; font-weight: 600; color: var(--gray-900); text-align: right; }
+
+  /* ── TRACKING SCREEN ── */
+  .tracking-search {
+    background: var(--navy); padding: 20px 16px;
+  }
+  .tracking-input-row { display: flex; gap: 8px; }
+  .tracking-input {
+    flex: 1; padding: 12px 14px; border-radius: var(--radius-sm);
+    border: none; background: rgba(255,255,255,0.1); color: white;
+    font-family: var(--font-body); font-size: 14px; outline: none;
+    font-weight: 500; letter-spacing: 1px;
+  }
+  .tracking-input::placeholder { color: rgba(255,255,255,0.4); letter-spacing: 0; font-weight: 400; }
+  .btn-track {
+    padding: 12px 16px; background: var(--orange); border: none;
+    border-radius: var(--radius-sm); font-size: 18px; cursor: pointer;
+  }
+
+  .track-progress {
+    display: flex; flex-direction: column; gap: 0; position: relative;
+  }
+  .track-step {
+    display: flex; gap: 14px; position: relative; padding-bottom: 20px;
+  }
+  .track-step:last-child { padding-bottom: 0; }
+  .track-left { display: flex; flex-direction: column; align-items: center; width: 32px; flex-shrink: 0; }
+  .track-dot {
+    width: 28px; height: 28px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 13px;
+    flex-shrink: 0; z-index: 1;
+  }
+  .track-dot.done { background: var(--green); }
+  .track-dot.active { background: var(--orange); box-shadow: 0 0 0 4px rgba(249,115,22,0.2); }
+  .track-dot.pending { background: var(--gray-200); }
+  .track-line { flex: 1; width: 2px; background: var(--gray-200); margin-top: 4px; }
+  .track-line.done { background: var(--green); }
+  .track-content { padding-top: 4px; }
+  .track-event { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+  .track-event.active { color: var(--orange); }
+  .track-event.pending { color: var(--gray-400); }
+  .track-location { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .track-time { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+  /* ── HISTORIAL ── */
+  .envio-card {
+    background: var(--white); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm);
+    border-left: 4px solid var(--gray-200);
+  }
+  .envio-card.en-transito { border-left-color: var(--orange); }
+  .envio-card.entregado { border-left-color: var(--green); }
+  .envio-card.pendiente { border-left-color: var(--yellow); }
+  .envio-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .envio-guia { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--navy); }
+  .status-badge {
+    padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .status-transito { background: var(--yellow-light); color: var(--yellow); }
+  .status-entregado { background: var(--green-light); color: var(--green); }
+  .status-pendiente { background: var(--blue-light); color: var(--blue); }
+  .envio-dest { font-size: 13px; color: var(--gray-700); }
+  .envio-meta { font-size: 11px; color: var(--gray-400); margin-top: 4px; display: flex; gap: 12px; }
+  .envio-actions { display: flex; gap: 8px; margin-top: 10px; }
+
+  /* ── PERFIL ── */
+  .perfil-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    padding: 28px 20px 24px; text-align: center; color: white;
+  }
+  .avatar {
+    width: 72px; height: 72px; background: var(--orange); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 28px; font-weight: 800;
+    color: white; margin: 0 auto 12px;
+  }
+  .perfil-nombre { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+  .perfil-email { color: rgba(255,255,255,0.6); font-size: 13px; margin-top: 4px; }
+  .menu-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; background: var(--white); border-bottom: 1px solid var(--gray-100);
+    cursor: pointer; transition: background 0.15s;
+  }
+  .menu-item:hover { background: var(--gray-50); }
+  .menu-item-left { display: flex; align-items: center; gap: 14px; }
+  .menu-icon { font-size: 20px; width: 28px; text-align: center; }
+  .menu-text { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .menu-sub { font-size: 12px; color: var(--gray-400); margin-top: 1px; }
+  .menu-arrow { color: var(--gray-400); font-size: 16px; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px; background: var(--white);
+    border-top: 1px solid var(--gray-100); padding: 8px 0 16px;
+    display: flex; z-index: 200; box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .bnav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 4px; padding: 6px 0; cursor: pointer; border: none; background: none;
+    transition: all 0.2s;
+  }
+  .bnav-icon { font-size: 22px; transition: transform 0.2s; }
+  .bnav-label { font-size: 10px; font-weight: 600; color: var(--gray-400); letter-spacing: 0.3px; }
+  .bnav-item.active .bnav-label { color: var(--orange); }
+  .bnav-item.active .bnav-icon { transform: scale(1.1); }
+
+  /* ── FAB ── */
+  .fab {
+    position: fixed; bottom: 80px; right: 20px;
+    width: 52px; height: 52px; background: var(--orange);
+    border-radius: 50%; border: none; cursor: pointer; z-index: 150;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; box-shadow: 0 4px 16px rgba(249,115,22,0.4);
+    transition: transform 0.2s;
+  }
+  .fab:active { transform: scale(0.92); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+    background: var(--gray-900); color: white; padding: 12px 20px;
+    border-radius: 24px; font-size: 13px; font-weight: 500; z-index: 999;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap; box-shadow: var(--shadow-lg);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── LOGIN SCREEN ── */
+  .login-screen {
+    min-height: 100vh; background: var(--navy);
+    display: flex; flex-direction: column;
+  }
+  .login-hero {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 40px 24px;
+  }
+  .login-logo {
+    width: 90px; height: 90px; background: var(--orange);
+    border-radius: 24px; display: flex; align-items: center; justify-content: center;
+    font-size: 42px; margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(249,115,22,0.4);
+  }
+  .login-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: white; text-align: center; }
+  .login-subtitle { color: rgba(255,255,255,0.5); font-size: 14px; margin-top: 8px; text-align: center; }
+  .login-card {
+    background: var(--white); border-radius: 28px 28px 0 0;
+    padding: 28px 24px 40px;
+  }
+  .login-tabs { display: flex; gap: 4px; background: var(--gray-100); border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+  .login-tab {
+    flex: 1; padding: 10px; border: none; background: transparent;
+    font-family: var(--font-display); font-size: 14px; font-weight: 600;
+    color: var(--gray-500); border-radius: 8px; cursor: pointer; transition: all 0.2s;
+  }
+  .login-tab.active { background: var(--white); color: var(--navy); box-shadow: var(--shadow-sm); }
+  .or-divider { text-align: center; color: var(--gray-400); font-size: 13px; margin: 16px 0; }
+  .btn-guest {
+    background: transparent; border: 2px solid var(--gray-200);
+    color: var(--gray-600); font-family: var(--font-display); font-weight: 600;
+  }
+
+  /* ── OPERADOR PANEL ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius); padding: 16px;
+    text-align: center; box-shadow: var(--shadow-sm);
+  }
+  .stat-num { font-family: var(--font-display); font-size: 28px; font-weight: 800; color: var(--navy); }
+  .stat-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .stat-sub { font-size: 12px; color: var(--green); font-weight: 600; margin-top: 4px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .screen.active .card, .screen.active .tarifa-card, .screen.active .envio-card {
+    animation: fadeUp 0.3s ease both;
+  }
+  .screen.active .card:nth-child(2) { animation-delay: 0.05s; }
+  .screen.active .card:nth-child(3) { animation-delay: 0.10s; }
+
+  /* ── UTILS ── */
+  .mt-8 { margin-top: 8px; }
+  .mt-12 { margin-top: 12px; }
+  .mb-0 { margin-bottom: 0; }
+  .text-center { text-align: center; }
+  .text-sm { font-size: 12px; color: var(--gray-500); }
+  .font-bold { font-weight: 700; }
+  .color-orange { color: var(--orange); }
+  .color-green { color: var(--green); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LOADING -->
+<div class="loading-overlay hidden" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">Cotizando con las paqueterías...</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- SCREEN: LOGIN -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="login-screen" id="screen-login" style="display:flex;">
+  <div class="login-hero">
+    <div class="login-logo">📦</div>
+    <div class="login-title">Paquetería Colotlán</div>
+    <div class="login-subtitle">Envíos seguros desde Jalisco</div>
+  </div>
+  <div class="login-card">
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('ingresar', this)">Ingresar</button>
+      <button class="login-tab" onclick="switchLoginTab('registrar', this)">Registrarse</button>
+    </div>
+
+    <div id="tab-ingresar">
+      <div class="form-row single" style="margin-bottom:10px;">
+        <div class="field-group">
+          <div class="field-label">Teléfono o correo</div>
+          <input class="field-input" placeholder="Ej. 3312345678" />
+        </div>
+      </div>
+      <div class="form-row single" style="margin-bottom:16px;">
+        <div class="field-group">
+          <div class="field-label">Contraseña</div>
+          <input class="field-input" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()">📲 Entrar</button>
+      <div class="or-divider">— o continúa sin cuenta —</div>
+      <button class="btn btn-guest" onclick="doGuest()">👤 Ingresar como invitado</button>
+    </div>
+
+    <div id="tab-registrar" class="hidden">
+      <div class="form-row" style="margin-bottom:10px;">
+        <div class="field-group">
+          <div class="field-label">Nombre</div>
+          <input class="field-input" placeholder="Tu nombre" />
+        </div>
+        <div class="field-group">
+          <div class="field-label">Apellido</div>
+          <input class="field-input" placeholder="Tu apellido" />
+        </div>
+      </div>
+      <div class="form-row single" style="margin-bottom:10px;">
+        <div class="field-group">
+          <div class="field-label">Teléfono</div>
+          <input class="field-input" placeholder="10 dígitos" />
+        </div>
+      </div>
+      <div class="form-row single" style="margin-bottom:16px;">
+        <div class="field-group">
+          <div class="field-label">Contraseña</div>
+          <input class="field-input" type="password" placeholder="Mínimo 6 caracteres" />
+        </div>
+      </div>
+      <button class="btn btn-orange" onclick="doLogin()">✅ Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- MAIN APP (post-login) -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="main-app" class="hidden" style="display:none;">
+
+  <!-- ── SCREEN: COTIZAR ── -->
+  <div class="screen active" id="screen-cotizar">
+    <div class="app-header">
+      <div class="header-top">
+        <div class="header-logo">
+          <div class="logo-icon">📦</div>
+          <div>
+            <div class="logo-text">Paquetería Colotlán</div>
+            <div class="logo-sub">Sucursal AP 001</div>
+          </div>
+        </div>
+        <div class="header-badge">👤 Jorge</div>
+      </div>
+      <div class="header-nav">
+        <button class="nav-tab active" onclick="switchTab('cotizar',this)"><span>🔍</span><span>Cotizar</span></button>
+        <button class="nav-tab" onclick="switchTab('rastrear',this)"><span>📍</span><span>Rastrear</span></button>
+        <button class="nav-tab" onclick="switchTab('envios',this)"><span>📋</span><span>Mis Envíos</span></button>
+        <button class="nav-tab" onclick="switchTab('perfil',this)"><span>👤</span><span>Perfil</span></button>
+      </div>
+    </div>
+
+    <div class="scroll-content">
+
+      <!-- COTIZADOR -->
+      <div class="card" id="card-cotizador">
+        <div class="card-title">📦 Nueva Cotización</div>
+
+        <div class="form-row">
+          <div class="field-group">
+            <div class="field-label">CP Origen</div>
+            <input class="field-input" id="cpOrigen" value="46200" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">CP Destino</div>
+            <input class="field-input" id="cpDestino" placeholder="Ej. 44100" oninput="lookupCP(this.value)" />
+            <div class="field-hint" id="cpHint"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field-group">
+            <div class="field-label">País</div>
+            <select class="field-input">
+              <option>México 🇲🇽</option>
+              <option>Estados Unidos 🇺🇸</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <div class="field-label">Peso (kg)</div>
+            <input class="field-input" id="peso" type="number" value="1" min="0.1" step="0.1" />
+          </div>
+        </div>
+
+        <div class="field-label" style="margin-bottom:6px;">Medidas (Largo × Ancho × Alto cm)</div>
+        <div class="form-row triple" style="margin-bottom:12px;">
+          <input class="field-input" id="largo" type="number" value="10" placeholder="Largo" />
+          <input class="field-input" id="ancho" type="number" value="10" placeholder="Ancho" />
+          <input class="field-input" id="alto" type="number" value="10" placeholder="Alto" />
+        </div>
+
+        <div class="form-row" style="margin-bottom:14px;">
+          <div class="field-group">
+            <div class="field-label">Artículo / Contenido</div>
+            <input class="field-input" placeholder="Ej. Ropa, Zapatos" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Seguro ($ valor)</div>
+            <input class="field-input" type="number" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <label class="discount-box">
+          <input type="checkbox" id="descuento" />
+          <div>
+            <div class="discount-label">🏷️ Descuento especial</div>
+            <div style="font-size:11px;color:#15803d;margin-top:2px;">Talabarteros / Emprendedores</div>
+          </div>
+        </label>
+
+        <button class="btn btn-primary" onclick="buscarTarifas()">🔍 Buscar Tarifas</button>
+      </div>
+
+      <!-- RESULTADOS -->
+      <div id="resultados-section" class="hidden">
+        <div class="card mb-0">
+          <div class="card-title">✅ Tarifas Disponibles</div>
+          <div id="lista-tarifas"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SCREEN: RASTREAR ── -->
+  <div class="screen" id="screen-rastrear">
+    <div class="tracking-search">
+      <div style="color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:10px;font-weight:500;">RASTREAR ENVÍO</div>
+      <div class="tracking-input-row">
+        <input class="tracking-input" id="guiaInput" placeholder="Número de guía..." maxlength="25" />
+        <button class="btn-track" onclick="rastrearGuia()">🔍</button>
+      </div>
+    </div>
+
+    <div class="scroll-content" style="padding-top:16px;">
+      <div id="track-resultado" class="hidden">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+            <div>
+              <div style="font-size:11px;color:var(--gray-400);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;">Guía</div>
+              <div style="font-family:var(--font-display);font-weight:800;font-size:16px;color:var(--navy);" id="track-guia-num">—</div>
+            </div>
+            <div class="status-badge status-transito" id="track-status-badge">En tránsito</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-key">Destino</div>
+            <div class="detail-val" id="track-destino">—</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-key">Paquetería</div>
+            <div class="detail-val" id="track-paq">—</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-key">Entrega estimada</div>
+            <div class="detail-val color-orange" id="track-eta">—</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📍 Seguimiento</div>
+          <div class="track-progress" id="track-eventos"></div>
+        </div>
+
+        <button class="btn btn-outline mt-8" onclick="compartirGuia()">📤 Compartir guía</button>
+      </div>
+
+      <div id="track-empty" style="text-align:center;padding:48px 24px;">
+        <div style="font-size:48px;margin-bottom:16px;">📦</div>
+        <div style="font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--navy);">Ingresa tu número de guía</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-top:6px;">Te mostramos el estado actualizado de tu envío</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: MIS ENVÍOS ── -->
+  <div class="screen" id="screen-envios">
+    <div class="app-header">
+      <div class="header-top">
+        <div class="logo-text" style="color:white;font-family:var(--font-display);font-size:18px;font-weight:800;">Mis Envíos</div>
+        <div style="display:flex;gap:6px;">
+          <div class="header-badge">📅 Mayo 2025</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-content">
+      <div id="lista-envios"></div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: PERFIL ── -->
+  <div class="screen" id="screen-perfil">
+    <div class="perfil-hero">
+      <div class="avatar">J</div>
+      <div class="perfil-nombre">Jorge Martínez</div>
+      <div class="perfil-email">+52 333 214 6049</div>
+      <div style="margin-top:12px;display:flex;gap:20px;justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:white;">12</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">Envíos</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.15);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:white;">3</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">En tránsito</div>
+        </div>
+        <div style="width:1px;background:rgba(255,255,255,0.15);"></div>
+        <div style="text-align:center;">
+          <div style="font-family:var(--font-display);font-size:20px;font-weight:800;color:white;">$4,280</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">Total enviado</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--white);margin-top:0;">
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-icon">📍</div>
+          <div>
+            <div class="menu-text">Mis direcciones guardadas</div>
+            <div class="menu-sub">4 direcciones frecuentes</div>
+          </div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-icon">🏷️</div>
+          <div>
+            <div class="menu-text">Descuento especial</div>
+            <div class="menu-sub" style="color:var(--green);">Activo — Talabartero</div>
+          </div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-icon">🔔</div>
+          <div>
+            <div class="menu-text">Notificaciones</div>
+            <div class="menu-sub">WhatsApp y push activos</div>
+          </div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-icon">📄</div>
+          <div>
+            <div class="menu-text">Historial de tickets</div>
+            <div class="menu-sub">Ver y reimprimir guías</div>
+          </div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+      <div class="menu-item" onclick="showToast('Sesión cerrada')">
+        <div class="menu-item-left">
+          <div class="menu-icon">🚪</div>
+          <div>
+            <div class="menu-text" style="color:var(--red);">Cerrar sesión</div>
+          </div>
+        </div>
+        <div class="menu-arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN: CHECKOUT (flujo de pago) ── -->
+  <div class="screen" id="screen-checkout">
+    <div class="app-header" style="padding-bottom:12px;">
+      <div class="header-top">
+        <button onclick="goBack()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">‹</button>
+        <div class="logo-text" style="color:white;">Confirmar Envío</div>
+        <div style="width:30px;"></div>
+      </div>
+    </div>
+
+    <!-- STEP BAR -->
+    <div class="step-bar">
+      <div class="step-item">
+        <div class="step-circle done" id="step1">✓</div>
+        <div class="step-line done"></div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle active" id="step2">2</div>
+        <div class="step-line" id="line2"></div>
+      </div>
+      <div class="step-item">
+        <div class="step-circle pending" id="step3">3</div>
+        <div class="step-line" id="line3"></div>
+      </div>
+      <div class="step-item" style="flex:0;">
+        <div class="step-circle pending" id="step4">4</div>
+      </div>
+    </div>
+
+    <div class="scroll-content" id="checkout-content">
+      <!-- Contenido dinámico según paso -->
+    </div>
+  </div>
+
+  <!-- ── SCREEN: CONFIRMACIÓN ── -->
+  <div class="screen" id="screen-confirmacion">
+    <div class="confirm-hero">
+      <div class="confirm-icon">🎉</div>
+      <div class="confirm-title">¡Envío Registrado!</div>
+      <div class="confirm-subtitle">Tu paquete está en camino</div>
+    </div>
+    <div class="scroll-content">
+      <div class="guia-box">
+        <div class="guia-label">Número de Guía</div>
+        <div class="guia-numero" id="guia-generada">EST-2025-00847</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Detalle del envío</div>
+        <div class="detail-row">
+          <div class="detail-key">Paquetería</div>
+          <div class="detail-val" id="conf-paq">Estafeta Ground</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Tipo de entrega</div>
+          <div class="detail-val" id="conf-tipo">Lo llevo a la oficina</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Destinatario</div>
+          <div class="detail-val" id="conf-dest">María López</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Destino</div>
+          <div class="detail-val" id="conf-ciudad">Guadalajara, Jalisco</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Entrega estimada</div>
+          <div class="detail-val color-orange" id="conf-eta">Lun 13 de mayo</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Total cobrado</div>
+          <div class="detail-val font-bold color-orange" id="conf-total">$472 MXN</div>
+        </div>
+      </div>
+
+      <div id="conf-oficina-msg" class="card" style="background:var(--blue-light);border:none;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="font-size:24px;">🏪</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px;">Lleva tu paquete a la oficina</div>
+            <div style="font-size:12px;color:var(--blue);line-height:1.5;">La guía estará <strong>lista e impresa</strong> cuando llegues. Solo presenta este número: <strong id="conf-guia-ref">EST-2025-00847</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="conf-recoleccion-msg" class="card hidden" style="background:var(--green-light);border:none;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="font-size:24px;">🚚</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px;">Recolección programada</div>
+            <div style="font-size:12px;color:var(--green);line-height:1.5;">El operador ya fue notificado. Pasarán por tu paquete en el horario acordado. Ten lista la guía impresa.</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-orange" onclick="compartirGuia()" style="margin-bottom:10px;">📤 Compartir guía con destinatario</button>
+      <button class="btn btn-outline" onclick="verTicketPDF()">🖨️ Ver / Imprimir ticket</button>
+      <button class="btn" style="background:var(--gray-100);color:var(--gray-700);margin-top:10px;" onclick="nuevoEnvio()">📦 Nuevo envío</button>
+    </div>
+  </div>
+
+</div><!-- /main-app -->
+
+<script>
+// ═══════════════════════════════════════════════════
+// DATA MOCK
+// ═══════════════════════════════════════════════════
+const CP_DB = {
+  '44100': 'Guadalajara, Jalisco',
+  '44200': 'Guadalajara, Jalisco',
+  '45000': 'Zapopan, Jalisco',
+  '45100': 'Zapopan, Jalisco',
+  '46200': 'Colotlán, Jalisco',
+  '99800': 'Teul de González, Zacatecas',
+  '06600': 'Ciudad de México, CDMX',
+  '64000': 'Monterrey, Nuevo León',
+  '20000': 'Aguascalientes, Ags.',
+  '28000': 'Colima, Colima',
+};
+
+const TARIFAS_MOCK = [
+  { carrier: 'Estafeta', servicio: 'Ground OD', precio: 472, dias: '2-5 días', logo: 'logo-estafeta' },
+  { carrier: 'Estafeta', servicio: 'Ground', precio: 482, dias: '1-2 días', logo: 'logo-estafeta' },
+  { carrier: 'DHL', servicio: 'Ground', precio: 536, dias: '1-4 días', logo: 'logo-dhl' },
+  { carrier: 'DHL', servicio: 'Express', precio: 545, dias: 'Día siguiente', logo: 'logo-dhl' },
+  { carrier: 'FedEx', servicio: 'Ground', precio: 556, dias: '2-4 días', logo: 'logo-fedex' },
+  { carrier: 'UPS', servicio: 'Saver', precio: 653, dias: 'Día siguiente', logo: 'logo-ups' },
+];
+
+const ENVIOS_MOCK = [
+  { guia: 'EST-2025-00847', carrier: 'Estafeta', destino: 'Guadalajara, Jalisco', destinatario: 'María López', fecha: '08 May', monto: '$472', status: 'en-transito', label: 'En tránsito', labelClass: 'status-transito' },
+  { guia: 'DHL-2025-00391', carrier: 'DHL Express', destino: 'Monterrey, NL', destinatario: 'Carlos Ruiz', fecha: '05 May', monto: '$545', status: 'entregado', label: 'Entregado', labelClass: 'status-entregado' },
+  { guia: 'FDX-2025-00218', carrier: 'FedEx Ground', destino: 'CDMX', destinatario: 'Ana Torres', fecha: '02 May', monto: '$556', status: 'entregado', label: 'Entregado', labelClass: 'status-entregado' },
+  { guia: 'EST-2025-00712', carrier: 'Estafeta', destino: 'Colima, Col.', destinatario: 'Luis Pérez', fecha: '28 Abr', monto: '$482', status: 'pendiente', label: 'Por enviar', labelClass: 'status-pendiente' },
+];
+
+const TRACKING_MOCK = {
+  'EST-2025-00847': {
+    destino: 'Guadalajara, Jalisco',
+    carrier: 'Estafeta Ground',
+    eta: 'Lun 13 de mayo',
+    status: 'En tránsito',
+    eventos: [
+      { icon: '✅', texto: 'Envío registrado', lugar: 'Paquetería Colotlán AP001', hora: '08 May, 10:23', estado: 'done' },
+      { icon: '📦', texto: 'Paquete recolectado', lugar: 'Colotlán, Jalisco', hora: '08 May, 14:05', estado: 'done' },
+      { icon: '🚚', texto: 'En tránsito', lugar: 'Centro de distribución Guadalajara', hora: '09 May, 06:42', estado: 'active' },
+      { icon: '🏙️', texto: 'En destino', lugar: 'Guadalajara, Jalisco', hora: 'Pendiente', estado: 'pending' },
+      { icon: '🎉', texto: 'Entregado', lugar: '—', hora: 'Pendiente', estado: 'pending' },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let state = {
+  currentScreen: 'login',
+  selectedTarifa: null,
+  checkoutStep: 2,
+  modoEntrega: null,
+  isGuest: false,
+};
+
+// ═══════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════
+function switchLoginTab(tab, el) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-ingresar').classList.toggle('hidden', tab !== 'ingresar');
+  document.getElementById('tab-registrar').classList.toggle('hidden', tab !== 'registrar');
+}
+
+function doLogin() {
+  showLoading('Iniciando sesión...');
+  setTimeout(() => { hideLoading(); launchApp(false); }, 1200);
+}
+
+function doGuest() {
+  state.isGuest = true;
+  launchApp(true);
+}
+
+function launchApp(guest) {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('main-app').classList.remove('hidden');
+  renderEnvios();
+  showScreen('cotizar');
+}
+
+// ═══════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const s = document.getElementById('screen-' + name);
+  if (s) s.classList.add('active');
+  state.currentScreen = name;
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  showScreen(name);
+}
+
+function goBack() { showScreen('cotizar'); }
+function nuevoEnvio() { showScreen('cotizar'); }
+
+// ═══════════════════════════════════════════════════
+// CP LOOKUP
+// ═══════════════════════════════════════════════════
+function lookupCP(val) {
+  const hint = document.getElementById('cpHint');
+  if (val.length === 5 && CP_DB[val]) {
+    hint.textContent = '📍 ' + CP_DB[val];
+  } else {
+    hint.textContent = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// COTIZADOR
+// ═══════════════════════════════════════════════════
+function buscarTarifas() {
+  const cp = document.getElementById('cpDestino').value;
+  if (cp.length < 5) { showToast('⚠️ Ingresa un CP destino válido'); return; }
+  showLoading('Cotizando con las paqueterías...');
+  setTimeout(() => {
+    hideLoading();
+    renderTarifas();
+    document.getElementById('resultados-section').classList.remove('hidden');
+    document.getElementById('resultados-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 1800);
+}
+
+function renderTarifas() {
+  const desc = document.getElementById('descuento').checked;
+  const lista = document.getElementById('lista-tarifas');
+  lista.innerHTML = TARIFAS_MOCK.map((t, i) => {
+    const precio = desc ? Math.round(t.precio * 0.9) : t.precio;
+    return `
+      <div class="tarifa-card" onclick="elegirTarifa(${i}, ${precio})" id="tarifa-${i}">
+        <div class="tarifa-logo ${t.logo}">${t.carrier}</div>
+        <div class="tarifa-info">
+          <div class="tarifa-carrier">${t.carrier}</div>
+          <div class="tarifa-servicio">${t.servicio}</div>
+          <div class="tarifa-tiempo">⏱ Llega en: ${t.dias}</div>
+        </div>
+        <div class="tarifa-precio">$${precio}</div>
+      </div>`;
+  }).join('');
+}
+
+function elegirTarifa(i, precio) {
+  document.querySelectorAll('.tarifa-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('tarifa-' + i).classList.add('selected');
+  state.selectedTarifa = { ...TARIFAS_MOCK[i], precio };
+  setTimeout(() => iniciarCheckout(), 400);
+}
+
+// ═══════════════════════════════════════════════════
+// CHECKOUT FLOW
+// ═══════════════════════════════════════════════════
+function iniciarCheckout() {
+  state.checkoutStep = 2;
+  state.modoEntrega = null;
+  showScreen('checkout');
+  renderCheckoutStep();
+}
+
+function renderCheckoutStep() {
+  const t = state.selectedTarifa;
+  const content = document.getElementById('checkout-content');
+
+  // Update step indicators
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step' + i);
+    if (i < state.checkoutStep) { el.className = 'step-circle done'; el.textContent = '✓'; }
+    else if (i === state.checkoutStep) { el.className = 'step-circle active'; el.textContent = i; }
+    else { el.className = 'step-circle pending'; el.textContent = i; }
+    if (i < 4) {
+      const line = document.getElementById('line' + i);
+      if (line) line.className = 'step-line' + (i < state.checkoutStep ? ' done' : '');
+    }
+  }
+
+  if (state.checkoutStep === 2) {
+    content.innerHTML = `
+      <div class="card">
+        <div class="card-title">🚚 ¿Cómo entregarás el paquete?</div>
+        <div class="entrega-options">
+          <div class="entrega-card ${state.modoEntrega === 'oficina' ? 'selected' : ''}" onclick="selectEntrega('oficina')">
+            <div class="entrega-icon">🏪</div>
+            <div class="entrega-title">Lo llevo a la oficina</div>
+            <div class="entrega-desc">La guía estará lista e impresa cuando llegues</div>
+            <span class="entrega-badge badge-blue">Sin costo extra</span>
+          </div>
+          <div class="entrega-card ${state.modoEntrega === 'recoleccion' ? 'selected' : ''}" onclick="selectEntrega('recoleccion')">
+            <div class="entrega-icon">🚚</div>
+            <div class="entrega-title">Recolección a domicilio</div>
+            <div class="entrega-desc">El operador pasa por tu paquete</div>
+            <span class="entrega-badge badge-green">Conveniente</span>
+          </div>
+        </div>
+
+        <div id="recoleccion-form" class="${state.modoEntrega === 'recoleccion' ? '' : 'hidden'}">
+          <div class="section-divider"><div class="divider-label">Datos de recolección</div></div>
+          <div class="form-row single" style="margin-bottom:10px;">
+            <div class="field-group">
+              <div class="field-label">Dirección completa</div>
+              <input class="field-input" placeholder="Calle, número, colonia" />
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:10px;">
+            <div class="field-group">
+              <div class="field-label">Horario preferido</div>
+              <select class="field-input">
+                <option>9:00 AM - 12:00 PM</option>
+                <option>12:00 PM - 3:00 PM</option>
+                <option>3:00 PM - 6:00 PM</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Fecha</div>
+              <input class="field-input" type="date" />
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--gray-50);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px;">
+          <div style="font-size:12px;color:var(--gray-500);margin-bottom:4px;">Tarifa seleccionada</div>
+          <div style="font-family:var(--font-display);font-weight:700;color:var(--navy);">${t.carrier} · ${t.servicio}</div>
+          <div style="font-size:20px;font-weight:800;color:var(--orange);font-family:var(--font-display);">$${t.precio} MXN</div>
+        </div>
+
+        <button class="btn btn-primary" onclick="nextStep()">Continuar →</button>
+      </div>`;
+
+  } else if (state.checkoutStep === 3) {
+    content.innerHTML = `
+      <div class="card">
+        <div class="card-title">🧍 Remitente (De)</div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="field-group">
+            <div class="field-label">Nombre *</div>
+            <input class="field-input" value="Jorge" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Apellido *</div>
+            <input class="field-input" placeholder="Apellido" />
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="field-group">
+            <div class="field-label">Teléfono *</div>
+            <input class="field-input" value="3332146049" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Empresa</div>
+            <input class="field-input" placeholder="Opcional" />
+          </div>
+        </div>
+        <div class="form-row single" style="margin-bottom:0;">
+          <div class="field-group">
+            <div class="field-label">Alias para guardar</div>
+            <input class="field-input" placeholder="Ej. Mi casa, Mi taller" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📬 Destinatario (Para)</div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="field-group">
+            <div class="field-label">Nombre *</div>
+            <input class="field-input" placeholder="Nombre" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Apellido *</div>
+            <input class="field-input" placeholder="Apellido" />
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="field-group">
+            <div class="field-label">Teléfono *</div>
+            <input class="field-input" placeholder="10 dígitos" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Correo</div>
+            <input class="field-input" placeholder="Opcional" />
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="field-group">
+            <div class="field-label">CP Destino</div>
+            <input class="field-input" value="${document.getElementById('cpDestino').value}" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Ciudad / Estado</div>
+            <input class="field-input" value="${CP_DB[document.getElementById('cpDestino').value] || ''}" />
+          </div>
+        </div>
+        <div class="form-row" style="margin-bottom:10px;">
+          <div class="field-group">
+            <div class="field-label">Colonia *</div>
+            <input class="field-input" placeholder="Colonia" />
+          </div>
+          <div class="field-group">
+            <div class="field-label">Calle y número *</div>
+            <input class="field-input" placeholder="Ej. Morelos 123" />
+          </div>
+        </div>
+        <div class="form-row single">
+          <div class="field-group">
+            <div class="field-label">Referencias</div>
+            <input class="field-input" placeholder="Ej. Casa verde, portón negro" />
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="nextStep()">Continuar →</button>`;
+
+  } else if (state.checkoutStep === 4) {
+    content.innerHTML = `
+      <div class="card">
+        <div class="card-title">💳 Cobro y confirmación</div>
+        <div class="detail-row">
+          <div class="detail-key">Paquetería</div>
+          <div class="detail-val">${t.carrier} · ${t.servicio}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Entrega</div>
+          <div class="detail-val">${state.modoEntrega === 'recoleccion' ? '🚚 Recolección a domicilio' : '🏪 Lo llevo a la oficina'}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail-key">Tiempo estimado</div>
+          <div class="detail-val">${t.dias}</div>
+        </div>
+        <div class="detail-row" style="border-top:2px solid var(--gray-200);margin-top:8px;padding-top:12px;">
+          <div class="detail-key" style="font-weight:700;font-size:15px;">Total a cobrar</div>
+          <div class="detail-val" style="font-size:20px;color:var(--orange);font-family:var(--font-display);font-weight:800;">$${t.precio} MXN</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 Método de pago</div>
+        <select class="field-input" style="margin-bottom:12px;">
+          <option>💵 Efectivo en oficina</option>
+          <option>🏦 Transferencia bancaria</option>
+          <option>💳 Terminal (próximamente)</option>
+        </select>
+        <div style="background:var(--yellow-light);border-radius:var(--radius-sm);padding:10px 12px;font-size:12px;color:var(--yellow);">
+          ⚠️ El pago se realiza al momento de entregar el paquete en oficina o al momento de la recolección.
+        </div>
+      </div>
+
+      <button class="btn btn-green" onclick="registrarVenta()" style="margin-bottom:10px;">✅ Registrar venta y generar guía</button>
+      <button class="btn btn-outline" onclick="state.checkoutStep=3;renderCheckoutStep()">‹ Editar datos</button>`;
+  }
+}
+
+function selectEntrega(modo) {
+  state.modoEntrega = modo;
+  renderCheckoutStep();
+}
+
+function nextStep() {
+  if (state.checkoutStep === 2 && !state.modoEntrega) {
+    showToast('⚠️ Selecciona cómo entregarás el paquete');
+    return;
+  }
+  state.checkoutStep++;
+  renderCheckoutStep();
+  document.getElementById('checkout-content').scrollTop = 0;
+}
+
+function registrarVenta() {
+  showLoading('Generando guía y registrando envío...');
+  setTimeout(() => {
+    hideLoading();
+    const t = state.selectedTarifa;
+    const guia = generateGuia(t.carrier);
+    document.getElementById('guia-generada').textContent = guia;
+    document.getElementById('conf-guia-ref').textContent = guia;
+    document.getElementById('conf-paq').textContent = t.carrier + ' ' + t.servicio;
+    document.getElementById('conf-tipo').textContent = state.modoEntrega === 'recoleccion' ? '🚚 Recolección a domicilio' : '🏪 Lo llevo a la oficina';
+    document.getElementById('conf-dest').textContent = 'El destinatario';
+    document.getElementById('conf-ciudad').textContent = CP_DB[document.getElementById('cpDestino').value] || '—';
+    document.getElementById('conf-total').textContent = '$' + t.precio + ' MXN';
+    document.getElementById('conf-oficina-msg').classList.toggle('hidden', state.modoEntrega === 'recoleccion');
+    document.getElementById('conf-recoleccion-msg').classList.toggle('hidden', state.modoEntrega !== 'recoleccion');
+    showScreen('confirmacion');
+    showToast('🎉 Guía generada correctamente');
+  }, 2000);
+}
+
+function generateGuia(carrier) {
+  const prefixes = { 'Estafeta': 'EST', 'DHL': 'DHL', 'FedEx': 'FDX', 'UPS': 'UPS' };
+  const prefix = prefixes[carrier] || 'PKG';
+  const num = String(Math.floor(Math.random() * 90000) + 10000);
+  return `${prefix}-2025-${num}`;
+}
+
+// ═══════════════════════════════════════════════════
+// TRACKING
+// ═══════════════════════════════════════════════════
+function rastrearGuia() {
+  const guia = document.getElementById('guiaInput').value.trim().toUpperCase();
+  if (!guia) { showToast('⚠️ Ingresa un número de guía'); return; }
+
+  showLoading('Consultando estatus...');
+  setTimeout(() => {
+    hideLoading();
+    const data = TRACKING_MOCK[guia] || generarTrackingMock(guia);
+    renderTracking(guia, data);
+  }, 1200);
+}
+
+function generarTrackingMock(guia) {
+  return {
+    destino: 'Destino simulado',
+    carrier: 'Paquetería',
+    eta: 'En 2-4 días',
+    status: 'En tránsito',
+    eventos: [
+      { icon: '✅', texto: 'Envío registrado', lugar: 'Paquetería Colotlán AP001', hora: 'Hoy', estado: 'done' },
+      { icon: '🚚', texto: 'En tránsito', lugar: 'Centro de distribución', hora: 'En curso', estado: 'active' },
+      { icon: '🎉', texto: 'Entregado', lugar: '—', hora: 'Pendiente', estado: 'pending' },
+    ]
+  };
+}
+
+function renderTracking(guia, data) {
+  document.getElementById('track-empty').classList.add('hidden');
+  document.getElementById('track-resultado').classList.remove('hidden');
+  document.getElementById('track-guia-num').textContent = guia;
+  document.getElementById('track-destino').textContent = data.destino;
+  document.getElementById('track-paq').textContent = data.carrier;
+  document.getElementById('track-eta').textContent = data.eta;
+  document.getElementById('track-status-badge').textContent = data.status;
+
+  document.getElementById('track-eventos').innerHTML = data.eventos.map((e, i) => `
+    <div class="track-step">
+      <div class="track-left">
+        <div class="track-dot ${e.estado}">${e.icon}</div>
+        ${i < data.eventos.length - 1 ? `<div class="track-line ${e.estado === 'done' ? 'done' : ''}"></div>` : ''}
+      </div>
+      <div class="track-content">
+        <div class="track-event ${e.estado}">${e.texto}</div>
+        <div class="track-location">${e.lugar}</div>
+        <div class="track-time">${e.hora}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════════════════
+function renderEnvios() {
+  document.getElementById('lista-envios').innerHTML = ENVIOS_MOCK.map(e => `
+    <div class="envio-card ${e.status}">
+      <div class="envio-header">
+        <div class="envio-guia">${e.guia}</div>
+        <div class="status-badge ${e.labelClass}">${e.label}</div>
+      </div>
+      <div class="envio-dest">Para: <strong>${e.destinatario}</strong></div>
+      <div class="envio-dest">${e.destino}</div>
+      <div class="envio-meta">
+        <span>📅 ${e.fecha}</span>
+        <span>📦 ${e.carrier}</span>
+        <span>💰 ${e.monto}</span>
+      </div>
+      <div class="envio-actions">
+        <button class="btn btn-sm btn-outline" onclick="rastrearDesdeHistorial('${e.guia}')">📍 Rastrear</button>
+        <button class="btn btn-sm" style="background:var(--gray-100);color:var(--gray-700);" onclick="showToast('📤 Compartiendo guía...')">📤 Compartir</button>
+        ${e.status === 'entregado' ? '' : `<button class="btn btn-sm" style="background:var(--blue-light);color:var(--blue);" onclick="showToast('🔔 Notificaciones activas')">🔔</button>`}
+      </div>
+    </div>`).join('');
+}
+
+function rastrearDesdeHistorial(guia) {
+  switchTab('rastrear', document.querySelectorAll('.nav-tab')[1]);
+  document.getElementById('guiaInput').value = guia;
+  rastrearGuia();
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function compartirGuia() {
+  showToast('📤 Enlace de rastreo copiado');
+}
+
+function verTicketPDF() {
+  showToast('🖨️ Abriendo ticket para imprimir...');
+}
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loading').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loading').classList.add('hidden');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

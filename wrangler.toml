@@ -1,0 +1,13 @@
+name = "paqueteria-colotlan"
+main = "worker/index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+ENVIA_SANDBOX = "true"
+
+# Para desarrollo local, crea un archivo .dev.vars con:
+# ENVIA_API_TOKEN=7aa6d85fde74e3a6702b4f35481670214d5356663869620167cfb961dd255c96
+#
+# Para producción usa secrets:
+#   npx wrangler secret put ENVIA_API_TOKEN
+#   npx wrangler secret put SUPABASE_SERVICE_KEY

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Operador — Paquetería Colotlán</title>
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/screens.css" />
+  <style>
+    .corte-stat {
+      background: #fff;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .corte-stat__valor { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--orange); }
+    .corte-stat__label { font-size: .8rem; color: var(--gray-500); margin-top: 2px; }
+  </style>
+</head>
+<body>
+
+  <script>
+    window.__ENV__ = {
+      SUPABASE_URL: 'https://lligzxpgsnugzabaavpo.supabase.co',
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsaWd6eHBnc251Z3phYmFhdnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDkxNjAsImV4cCI6MjA5MzkyNTE2MH0.FhNl3CiCTDJOhftmd2TDflB4WjZIHqwtUaVwS3YgO2E',
+    };
+  </script>
+
+  <!-- ── Header ─────────────────────────────────────── -->
+  <header class="app-header">
+    <img src="assets/img/logo.png" alt="Logo" class="app-header__logo" />
+    <span class="app-header__title">Panel Mostrador</span>
+    <button id="btn-logout" style="background:none;border:none;color:#fff;font-size:.85rem;">Salir</button>
+  </header>
+
+  <!-- ── Corte del día ──────────────────────────────── -->
+  <section style="padding:16px">
+    <h2 style="font-size:1rem;margin-bottom:12px">Corte del día</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      <div class="corte-stat">
+        <div class="corte-stat__valor" id="stat-envios">0</div>
+        <div class="corte-stat__label">Envíos hoy</div>
+      </div>
+      <div class="corte-stat">
+        <div class="corte-stat__valor" id="stat-total">$0</div>
+        <div class="corte-stat__label">Total cobrado</div>
+      </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <h2 style="font-size:1rem;margin-bottom:12px">Acciones</h2>
+    <div class="operator-grid" style="padding:0">
+      <div class="operator-tile" id="tile-nuevo-envio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Nuevo envío</span>
+      </div>
+      <div class="operator-tile" id="tile-rastrear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span>Rastrear guía</span>
+      </div>
+      <div class="operator-tile" id="tile-imprimir">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        <span>Imprimir ticket</span>
+      </div>
+      <div class="operator-tile" id="tile-corte">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        <span>Corte PDF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Lista envíos del día ───────────────────────── -->
+  <section style="padding:0 16px 100px">
+    <h2 style="font-size:1rem;margin-bottom:12px">Envíos de hoy</h2>
+    <div id="lista-envios-dia">
+      <p style="color:var(--gray-500);font-size:.9rem">Sin envíos registrados hoy.</p>
+    </div>
+  </section>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script type="module">
+    import { supabase, logout } from './assets/js/auth.js';
+    import { toast } from './assets/js/app.js';
+    import { generarTicket } from './assets/js/pdf.js';
+
+    document.getElementById('btn-logout').addEventListener('click', logout);
+    document.getElementById('tile-nuevo-envio').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>

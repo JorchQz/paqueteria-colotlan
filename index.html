@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Paquetería Colotlán</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────── */
+:root {
+  --navy:       #0D1B3E;
+  --navy-mid:   #1a2d5a;
+  --orange:     #E8610A;
+  --orange-lt:  #FFF0E8;
+  --gold:       #C9922A;
+  --gold-lt:    #FDF3E2;
+  --cream:      #F7F3ED;
+  --white:      #FFFFFF;
+  --gray-50:    #F9FAFB;
+  --gray-100:   #F3F4F6;
+  --gray-200:   #E5E7EB;
+  --gray-400:   #9CA3AF;
+  --gray-500:   #6B7280;
+  --gray-700:   #374151;
+  --gray-900:   #111827;
+  --green:      #15803D;
+  --green-lt:   #DCFCE7;
+  --red:        #DC2626;
+  --red-lt:     #FEE2E2;
+  --blue:       #1D4ED8;
+  --blue-lt:    #DBEAFE;
+  --yellow:     #B45309;
+  --yellow-lt:  #FEF3C7;
+
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --radius-sm:  6px;
+  --radius:     10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:  0 12px 32px rgba(0,0,0,.12);
+
+  /* Greca — patrón escalonado inspirado en xicalcoliuhqui / piteado */
+  --greca: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12'%3E%3Cpath d='M0,6 L6,6 L6,0 L12,0 L12,6 L18,6 L18,12 L24,12' stroke='%23C9922A' stroke-width='1.5' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
+
+  /* Diamante — trama piteado para fondos */
+  --diamond-bg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M12,2 L22,12 L12,22 L2,12 Z' fill='none' stroke='rgba(255,255,255,0.045)' stroke-width='1'/%3E%3C/svg%3E");
+}
+
+/* ─── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  background: var(--cream);
+  color: var(--gray-900);
+  min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── ICONOS ─────────────────────────────────────────────── */
+.icon { display:inline-flex; align-items:center; justify-content:center; }
+.icon svg { width:20px; height:20px; stroke-width:1.75; }
+.icon-sm svg { width:16px; height:16px; }
+.icon-lg svg { width:24px; height:24px; }
+.icon-xl svg { width:32px; height:32px; }
+
+/* ─── PANTALLAS ──────────────────────────────────────────── */
+.screen { display:none; flex-direction:column; min-height:100vh; }
+.screen.active { display:flex; }
+
+/* ─── GRECA ORNAMENTAL ───────────────────────────────────── */
+.greca-line {
+  height: 12px;
+  background-image: var(--greca);
+  background-repeat: repeat-x;
+  background-size: 24px 12px;
+  flex-shrink: 0;
+}
+.greca-line--light {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12'%3E%3Cpath d='M0,6 L6,6 L6,0 L12,0 L12,6 L18,6 L18,12 L24,12' stroke='rgba(201,146,42,0.35)' stroke-width='1.5' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
+}
+
+/* ─── HEADER ─────────────────────────────────────────────── */
+.app-header {
+  background: var(--navy);
+  background-image: var(--diamond-bg);
+  padding: 14px 18px 16px;
+  position: sticky; top:0; z-index:100;
+}
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-mark {
+  width: 36px; height: 36px;
+  background: var(--orange);
+  border-radius: var(--radius-sm);
+  display: flex; align-items:center; justify-content:center;
+  color: white;
+  flex-shrink: 0;
+}
+.header-mark svg { width:18px; height:18px; stroke-width:2; }
+.header-brand-text { line-height:1.15; }
+.header-brand-name {
+  font-weight: 800;
+  font-size: 13px;
+  color: white;
+  letter-spacing: .2px;
+}
+.header-brand-sub {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,.1);
+  border-radius: 20px;
+  padding: 5px 10px;
+  color: rgba(255,255,255,.8);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s;
+}
+.header-user:hover { background: rgba(255,255,255,.16); }
+.header-user svg { width:14px; height:14px; }
+
+.header-back {
+  background: none; border: none; color: white; cursor: pointer;
+  display: flex; align-items:center; gap:6px;
+  font-family: var(--font); font-size: 14px; font-weight: 500;
+}
+.header-title {
+  font-size: 15px; font-weight: 700; color: white;
+  letter-spacing: .1px;
+}
+
+/* ─── NAV INFERIOR ───────────────────────────────────────── */
+.bottom-nav {
+  position: fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:430px;
+  background: white;
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.bnav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:3px; padding:10px 4px 12px;
+  background:none; border:none; cursor:pointer;
+  transition: color .15s;
+  color: var(--gray-400);
+}
+.bnav-item.active { color: var(--orange); }
+.bnav-item svg { width:20px; height:20px; stroke-width:1.75; }
+.bnav-label { font-size:10px; font-weight:600; letter-spacing:.3px; }
+
+/* ─── SCROLL AREA ────────────────────────────────────────── */
+.scroll-content { flex:1; overflow-y:auto; padding:18px 16px 100px; }
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+.card-header {
+  display: flex; align-items:center; gap:8px;
+  font-weight: 700; font-size: 14px; color: var(--navy);
+  margin-bottom: 16px;
+}
+.card-header svg { width:16px; height:16px; color: var(--gold); }
+
+/* ─── FORM ───────────────────────────────────────────────── */
+.field-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.field-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+.field-grid-1 { display:grid; grid-template-columns:1fr; margin-bottom:12px; }
+
+.field { display:flex; flex-direction:column; gap:4px; }
+.field-label {
+  font-size:10px; font-weight:700;
+  letter-spacing:.8px; text-transform:uppercase;
+  color: var(--gray-500);
+}
+.field-input {
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-family: var(--font); font-size: 14px;
+  color: var(--gray-900); background: var(--gray-50);
+  transition: border-color .15s, background .15s;
+  outline: none; width: 100%;
+}
+.field-input:focus { border-color: var(--navy); background: white; }
+.field-input::placeholder { color: var(--gray-400); font-size:13px; }
+.field-input.readonly { background: var(--gray-100); color: var(--gray-500); cursor:default; }
+select.field-input { appearance:none; cursor:pointer; }
+.field-hint { font-size:11px; color:var(--orange); font-weight:600; }
+.field-error { font-size:11px; color:var(--red); font-weight:500; }
+
+/* ─── BOTONES ─────────────────────────────────────────────── */
+.btn {
+  display: flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; padding:13px 20px;
+  border: none; border-radius: var(--radius);
+  font-family: var(--font); font-size:14px; font-weight:700;
+  cursor: pointer; transition: opacity .15s, transform .1s;
+  letter-spacing: .2px;
+}
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity:.45; pointer-events:none; }
+.btn svg { width:16px; height:16px; stroke-width:2; }
+.btn-primary   { background: var(--navy);   color:white; }
+.btn-orange    { background: var(--orange);  color:white; }
+.btn-outline   { background: transparent; border:1.5px solid var(--navy); color:var(--navy); }
+.btn-ghost     { background: var(--gray-100); color:var(--gray-700); }
+.btn-green     { background: var(--green); color:white; }
+.btn-sm        { width:auto; padding:7px 14px; font-size:12px; }
+
+/* ─── DESCUENTO ──────────────────────────────────────────── */
+.discount-row {
+  display: flex; align-items:center; gap:12px;
+  padding: 12px 14px;
+  border: 1.5px solid var(--green);
+  border-radius: var(--radius);
+  background: var(--green-lt);
+  cursor: pointer; margin-bottom: 14px;
+  user-select: none;
+}
+.discount-row input[type=checkbox] { width:16px; height:16px; accent-color:var(--green); cursor:pointer; flex-shrink:0; }
+.discount-row-text { font-size:13px; font-weight:600; color:var(--green); line-height:1.3; }
+.discount-row-sub  { font-size:11px; color:#15803d; margin-top:2px; font-weight:400; }
+
+/* ─── LOADING ─────────────────────────────────────────────── */
+.loading-overlay {
+  position:fixed; inset:0; background:rgba(13,27,62,.88);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  z-index:999; backdrop-filter:blur(4px);
+}
+.loading-spinner {
+  width:44px; height:44px;
+  border: 3px solid rgba(255,255,255,.15);
+  border-top-color: var(--orange);
+  border-radius:50%;
+  animation: spin .7s linear infinite;
+  margin-bottom:14px;
+}
+.loading-text { color:white; font-size:13px; font-weight:600; letter-spacing:.2px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ─── TARIFAS ─────────────────────────────────────────────── */
+.tarifa-card {
+  display: flex; align-items:center; gap:14px;
+  padding: 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  cursor: pointer; margin-bottom:8px;
+  background: white;
+  transition: border-color .15s, box-shadow .15s;
+}
+.tarifa-card:hover, .tarifa-card.selected {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(232,97,10,.1);
+}
+.tarifa-logo {
+  width:50px; height:32px; border-radius:var(--radius-sm);
+  display:flex; align-items:center; justify-content:center;
+  font-size:9px; font-weight:800; letter-spacing:.5px; flex-shrink:0;
+}
+.logo-estafeta { background:#CC0000; color:white; }
+.logo-dhl      { background:#FFCC00; color:#D40511; }
+.logo-fedex    { background:white; color:#4D148C; border:1px solid var(--gray-200); }
+.logo-ups      { background:#351C15; color:#FFB500; }
+.tarifa-info   { flex:1; }
+.tarifa-carrier  { font-size:13px; font-weight:700; color:var(--navy); }
+.tarifa-service  { font-size:11px; color:var(--gray-500); margin-top:1px; }
+.tarifa-eta      { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.tarifa-price    { font-size:20px; font-weight:800; color:var(--orange); flex-shrink:0; }
+
+/* ─── MODO ENTREGA ───────────────────────────────────────── */
+.entrega-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.entrega-card {
+  border: 1.5px solid var(--gray-200); border-radius: var(--radius);
+  padding:16px 12px; text-align:center; cursor:pointer;
+  background:white; transition: border-color .15s;
+}
+.entrega-card.selected { border-color:var(--orange); background:var(--orange-lt); }
+.entrega-card-icon { color:var(--navy); margin-bottom:8px; display:flex; justify-content:center; }
+.entrega-card-icon svg { width:28px; height:28px; stroke-width:1.5; }
+.entrega-card-title { font-size:12px; font-weight:700; color:var(--navy); }
+.entrega-card-desc  { font-size:10px; color:var(--gray-500); margin-top:3px; line-height:1.4; }
+.entrega-badge {
+  display:inline-block; margin-top:6px; padding:2px 8px;
+  border-radius:20px; font-size:10px; font-weight:600;
+}
+.badge-blue  { background:var(--blue-lt);   color:var(--blue); }
+.badge-green { background:var(--green-lt); color:var(--green); }
+
+/* ─── STEP BAR ───────────────────────────────────────────── */
+.step-bar {
+  display:flex; align-items:center;
+  background: var(--navy); padding:12px 20px; gap:0;
+}
+.step-item { display:flex; align-items:center; flex:1; }
+.step-circle {
+  width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0;
+  transition: all .25s;
+}
+.step-circle.done    { background:var(--green);  color:white; }
+.step-circle.active  { background:var(--orange); color:white; }
+.step-circle.pending { background:rgba(255,255,255,.15); color:rgba(255,255,255,.4); }
+.step-line { flex:1; height:2px; background:rgba(255,255,255,.15); margin:0 4px; }
+.step-line.done { background:var(--green); }
+
+/* ─── RASTREO ─────────────────────────────────────────────── */
+.track-search {
+  background: var(--navy);
+  background-image: var(--diamond-bg);
+  padding: 18px 16px 20px;
+}
+.track-label { color:rgba(255,255,255,.5); font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; }
+.track-input-row { display:flex; gap:8px; }
+.track-input {
+  flex:1; padding:11px 14px;
+  border-radius:var(--radius); border:none;
+  background:rgba(255,255,255,.12); color:white;
+  font-family:var(--font); font-size:13px; outline:none;
+  letter-spacing:.5px;
+}
+.track-input::placeholder { color:rgba(255,255,255,.35); letter-spacing:0; }
+.btn-track {
+  padding:11px 14px; background:var(--orange); border:none;
+  border-radius:var(--radius); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:white;
+}
+.btn-track svg { width:18px; height:18px; }
+
+.track-timeline { display:flex; flex-direction:column; }
+.track-step { display:flex; gap:14px; padding-bottom:22px; }
+.track-step:last-child { padding-bottom:0; }
+.track-left { display:flex; flex-direction:column; align-items:center; width:32px; flex-shrink:0; }
+.track-dot {
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; z-index:1;
+}
+.track-dot.done    { background:var(--green); color:white; }
+.track-dot.active  { background:var(--orange); color:white; box-shadow:0 0 0 4px rgba(232,97,10,.18); }
+.track-dot.pending { background:var(--gray-200); color:var(--gray-400); }
+.track-dot svg { width:14px; height:14px; stroke-width:2.5; }
+.track-connector { flex:1; width:2px; background:var(--gray-200); margin-top:4px; }
+.track-connector.done { background:var(--green); }
+.track-body { padding-top:5px; }
+.track-event { font-size:13px; font-weight:600; color:var(--gray-900); }
+.track-event.pending { color:var(--gray-400); font-weight:500; }
+.track-event.active  { color:var(--orange); }
+.track-loc   { font-size:11px; color:var(--gray-500); margin-top:2px; }
+.track-time  { font-size:11px; color:var(--gray-400); margin-top:1px; }
+
+/* ─── ENVÍOS ─────────────────────────────────────────────── */
+.envio-card {
+  background:white; border-radius:var(--radius-lg);
+  padding:14px 16px; margin-bottom:10px;
+  box-shadow:var(--shadow-sm);
+  border-left:3px solid var(--gray-200);
+}
+.envio-card.en_transito { border-left-color:var(--orange); }
+.envio-card.entregado   { border-left-color:var(--green); }
+.envio-card.pendiente   { border-left-color:var(--blue); }
+.envio-card.cancelado   { border-left-color:var(--red); }
+.envio-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.envio-guia { font-size:13px; font-weight:700; color:var(--navy); letter-spacing:.3px; }
+.status-pill {
+  padding:3px 8px; border-radius:20px;
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
+}
+.pill-transito { background:var(--yellow-lt); color:var(--yellow); }
+.pill-entregado{ background:var(--green-lt);  color:var(--green); }
+.pill-pendiente{ background:var(--blue-lt);   color:var(--blue); }
+.pill-cancelado{ background:var(--red-lt);    color:var(--red); }
+.envio-dest { font-size:13px; color:var(--gray-700); margin-top:2px; }
+.envio-meta { font-size:11px; color:var(--gray-400); margin-top:5px; display:flex; gap:12px; flex-wrap:wrap; }
+.envio-meta span { display:flex; align-items:center; gap:3px; }
+.envio-meta svg  { width:11px; height:11px; }
+.envio-actions { display:flex; gap:8px; margin-top:10px; }
+
+/* ─── DETALLE ROW ────────────────────────────────────────── */
+.detail-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:9px 0; border-bottom:1px solid var(--gray-100);
+}
+.detail-row:last-child { border-bottom:none; }
+.detail-key { font-size:13px; color:var(--gray-500); }
+.detail-val { font-size:13px; font-weight:600; color:var(--gray-900); text-align:right; }
+
+/* ─── DIVIDER ────────────────────────────────────────────── */
+.divider-label {
+  display:flex; align-items:center; gap:10px; margin:14px 0;
+}
+.divider-label::before, .divider-label::after {
+  content:''; flex:1; height:1px; background:var(--gray-200);
+}
+.divider-text { font-size:10px; font-weight:700; color:var(--gray-400); letter-spacing:.6px; text-transform:uppercase; white-space:nowrap; }
+
+/* ─── GUÍA BOX ───────────────────────────────────────────── */
+.guia-box {
+  background:var(--navy); background-image:var(--diamond-bg);
+  border-radius:var(--radius-lg); padding:20px; text-align:center; margin-bottom:12px;
+}
+.guia-label { font-size:10px; color:rgba(255,255,255,.55); font-weight:700; letter-spacing:1.2px; text-transform:uppercase; margin-bottom:6px; }
+.guia-number { font-size:22px; font-weight:800; color:white; letter-spacing:2px; }
+.guia-line { width:48px; height:2px; background:var(--gold); margin:10px auto 0; border-radius:2px; }
+
+/* ─── CONFIRM HERO ───────────────────────────────────────── */
+.confirm-hero {
+  background:var(--navy); background-image:var(--diamond-bg);
+  padding:36px 24px 28px; text-align:center; color:white;
+}
+.confirm-check {
+  width:64px; height:64px; background:var(--green);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  margin:0 auto 16px; color:white;
+}
+.confirm-check svg { width:30px; height:30px; stroke-width:2.5; }
+.confirm-title { font-size:22px; font-weight:800; letter-spacing:-.2px; }
+.confirm-sub { color:rgba(255,255,255,.55); font-size:13px; margin-top:6px; }
+
+/* ─── INFO BOX ───────────────────────────────────────────── */
+.info-box { display:flex; gap:12px; align-items:flex-start; padding:14px; border-radius:var(--radius); margin-bottom:12px; }
+.info-box-icon { flex-shrink:0; color:inherit; }
+.info-box-icon svg { width:20px; height:20px; stroke-width:1.75; }
+.info-box-text { font-size:12px; line-height:1.6; }
+.info-box-title { font-weight:700; font-size:13px; margin-bottom:3px; }
+.info-box.blue  { background:var(--blue-lt);   color:var(--blue); }
+.info-box.green { background:var(--green-lt); color:var(--green); }
+.info-box.yellow{ background:var(--yellow-lt);color:var(--yellow); }
+
+/* ─── PERFIL ─────────────────────────────────────────────── */
+.perfil-hero {
+  background:var(--navy); background-image:var(--diamond-bg);
+  padding:28px 20px 24px; text-align:center; color:white;
+}
+.perfil-avatar {
+  width:70px; height:70px; background:var(--orange);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:26px; font-weight:800; color:white; margin:0 auto 12px;
+}
+.perfil-name  { font-size:20px; font-weight:800; }
+.perfil-sub   { color:rgba(255,255,255,.5); font-size:13px; margin-top:4px; }
+.perfil-stats { display:flex; gap:0; justify-content:center; margin-top:18px; }
+.perfil-stat  { text-align:center; padding:0 20px; }
+.perfil-stat + .perfil-stat { border-left:1px solid rgba(255,255,255,.15); }
+.perfil-stat-num { font-size:20px; font-weight:800; color:white; }
+.perfil-stat-label { font-size:10px; color:rgba(255,255,255,.45); margin-top:2px; letter-spacing:.3px; }
+.menu-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px; background:white; border-bottom:1px solid var(--gray-100);
+  cursor:pointer; transition:background .12s;
+}
+.menu-item:hover { background:var(--gray-50); }
+.menu-item-left { display:flex; align-items:center; gap:14px; }
+.menu-icon { width:36px; height:36px; background:var(--gray-100); border-radius:var(--radius); display:flex; align-items:center; justify-content:center; color:var(--navy); flex-shrink:0; }
+.menu-icon svg { width:16px; height:16px; stroke-width:1.75; }
+.menu-label { font-size:14px; font-weight:500; color:var(--gray-900); }
+.menu-sub   { font-size:11px; color:var(--gray-400); margin-top:1px; }
+.menu-arrow { color:var(--gray-300); }
+.menu-arrow svg { width:16px; height:16px; }
+
+/* ─── LOGIN ──────────────────────────────────────────────── */
+.login-screen { min-height:100vh; background:var(--navy); background-image:var(--diamond-bg); display:flex; flex-direction:column; }
+.login-top { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px 28px; }
+.login-mark {
+  width:76px; height:76px; background:var(--orange);
+  border-radius:20px; display:flex; align-items:center; justify-content:center;
+  margin-bottom:22px; color:white;
+  box-shadow:0 8px 28px rgba(232,97,10,.4);
+}
+.login-mark svg { width:36px; height:36px; stroke-width:1.75; }
+.login-title    { font-size:26px; font-weight:800; color:white; text-align:center; letter-spacing:-.3px; }
+.login-subtitle { color:rgba(255,255,255,.45); font-size:13px; margin-top:6px; text-align:center; line-height:1.5; }
+
+/* greca separando hero de formulario */
+.login-greca { height:12px; background-image:var(--greca); background-repeat:repeat-x; background-size:24px 12px; }
+
+.login-card { background:white; padding:28px 22px 40px; flex-shrink:0; }
+.login-tabs { display:flex; gap:4px; background:var(--gray-100); border-radius:var(--radius); padding:4px; margin-bottom:22px; }
+.login-tab {
+  flex:1; padding:9px; border:none; background:transparent;
+  font-family:var(--font); font-size:13px; font-weight:700;
+  color:var(--gray-500); border-radius:var(--radius-sm); cursor:pointer; transition:all .2s;
+}
+.login-tab.active { background:white; color:var(--navy); box-shadow:var(--shadow-sm); }
+.login-or { text-align:center; color:var(--gray-400); font-size:12px; margin:14px 0; }
+
+/* ─── TOAST ──────────────────────────────────────────────── */
+.toast {
+  position:fixed; top:16px; left:50%; transform:translateX(-50%) translateY(-72px);
+  background:var(--gray-900); color:white; padding:11px 18px;
+  border-radius:20px; font-size:13px; font-weight:500; z-index:9999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap; box-shadow:var(--shadow-lg);
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* ─── ESTADO VACÍO ───────────────────────────────────────── */
+.empty-state { text-align:center; padding:52px 24px; }
+.empty-state-icon { color:var(--gray-300); margin-bottom:16px; display:flex; justify-content:center; }
+.empty-state-icon svg { width:48px; height:48px; stroke-width:1; }
+.empty-state-title { font-size:16px; font-weight:700; color:var(--navy); }
+.empty-state-sub   { font-size:13px; color:var(--gray-500); margin-top:6px; line-height:1.5; }
+
+/* ─── UTILIDADES ─────────────────────────────────────────── */
+.hidden { display:none !important; }
+.mt-8   { margin-top:8px; }
+.mt-12  { margin-top:12px; }
+.color-orange { color:var(--orange); }
+.color-green  { color:var(--green); }
+.font-bold    { font-weight:700; }
+.text-right   { text-align:right; }
+
+/* ─── ANIMACIONES ─────────────────────────────────────────── */
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.screen.active .card { animation:fadeUp .28s ease both; }
+.screen.active .card:nth-child(2) { animation-delay:.05s; }
+.screen.active .card:nth-child(3) { animation-delay:.10s; }
+.screen.active .tarifa-card { animation:fadeUp .22s ease both; }
+.screen.active .tarifa-card:nth-child(2) { animation-delay:.04s; }
+.screen.active .tarifa-card:nth-child(3) { animation-delay:.08s; }
+.screen.active .tarifa-card:nth-child(4) { animation-delay:.12s; }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<div class="loading-overlay hidden" id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">Cargando...</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PANTALLA: LOGIN
+════════════════════════════════════════════════════════════ -->
+<div class="login-screen" id="screen-login" style="display:none;">
+  <div class="login-top">
+    <div class="login-mark">
+      <i data-lucide="package"></i>
+    </div>
+    <div class="login-title">Paquetería Colotlán</div>
+    <div class="login-subtitle">Envíos seguros a todo México<br>desde Colotlán, Jalisco</div>
+  </div>
+
+  <div class="login-greca"></div>
+
+  <div class="login-card">
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('ingresar', this)">Ingresar</button>
+      <button class="login-tab" onclick="switchLoginTab('registrar', this)">Registrarse</button>
+    </div>
+
+    <div id="tab-ingresar">
+      <div class="field-grid-1">
+        <div class="field">
+          <div class="field-label">Correo electrónico</div>
+          <input class="field-input" id="login-email" type="email" placeholder="tucorreo@ejemplo.com" />
+        </div>
+      </div>
+      <div class="field-grid-1" style="margin-bottom:18px;">
+        <div class="field">
+          <div class="field-label">Contraseña</div>
+          <input class="field-input" id="login-password" type="password" placeholder="Mínimo 6 caracteres" />
+        </div>
+      </div>
+      <div id="login-error" class="field-error hidden" style="margin-bottom:12px;text-align:center;"></div>
+      <button class="btn btn-primary" id="btn-login" onclick="doLogin()">
+        <i data-lucide="log-in"></i> Entrar
+      </button>
+      <div class="login-or">— o continúa sin cuenta —</div>
+      <button class="btn btn-outline" onclick="doGuest()">
+        <i data-lucide="user"></i> Ingresar como invitado
+      </button>
+    </div>
+
+    <div id="tab-registrar" class="hidden">
+      <div class="field-grid-2">
+        <div class="field">
+          <div class="field-label">Nombre *</div>
+          <input class="field-input" id="reg-nombre" placeholder="Tu nombre" />
+        </div>
+        <div class="field">
+          <div class="field-label">Apellido</div>
+          <input class="field-input" id="reg-apellido" placeholder="Apellido" />
+        </div>
+      </div>
+      <div class="field-grid-1">
+        <div class="field">
+          <div class="field-label">Teléfono * (10 dígitos)</div>
+          <input class="field-input" id="reg-telefono" type="tel" placeholder="3310000000" maxlength="10" />
+        </div>
+      </div>
+      <div class="field-grid-1">
+        <div class="field">
+          <div class="field-label">Correo electrónico *</div>
+          <input class="field-input" id="reg-email" type="email" placeholder="tucorreo@ejemplo.com" />
+        </div>
+      </div>
+      <div class="field-grid-1" style="margin-bottom:18px;">
+        <div class="field">
+          <div class="field-label">Contraseña * (mín. 6 caracteres)</div>
+          <input class="field-input" id="reg-password" type="password" placeholder="••••••••" />
+        </div>
+      </div>
+      <div id="reg-error" class="field-error hidden" style="margin-bottom:12px;text-align:center;"></div>
+      <button class="btn btn-orange" id="btn-register" onclick="doRegister()">
+        <i data-lucide="user-plus"></i> Crear cuenta
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     APP PRINCIPAL
+════════════════════════════════════════════════════════════ -->
+<div id="main-app" class="hidden">
+
+  <!-- ── COTIZAR ── -->
+  <div class="screen active" id="screen-cotizar">
+    <div class="app-header">
+      <div class="header-row">
+        <div class="header-brand">
+          <div class="header-mark"><i data-lucide="package"></i></div>
+          <div class="header-brand-text">
+            <div class="header-brand-name">Paquetería Colotlán</div>
+            <div class="header-brand-sub">Sucursal AP · 001</div>
+          </div>
+        </div>
+        <div class="header-user" id="header-user-badge" onclick="switchTab('perfil', document.querySelectorAll('.bnav-item')[3])">
+          <i data-lucide="user" style="width:14px;height:14px;"></i>
+          <span id="header-user-name">Invitado</span>
+        </div>
+      </div>
+    </div>
+    <div class="greca-line"></div>
+
+    <div class="scroll-content">
+      <div class="card">
+        <div class="card-header">
+          <i data-lucide="search"></i>
+          Nueva cotización
+        </div>
+
+        <div class="field-grid-2">
+          <div class="field">
+            <div class="field-label">CP Origen</div>
+            <input class="field-input readonly" id="cpOrigen" value="46200" readonly />
+          </div>
+          <div class="field">
+            <div class="field-label">CP Destino</div>
+            <input class="field-input" id="cpDestino" placeholder="Ej. 44100" maxlength="5" oninput="lookupCP(this.value)" />
+            <div class="field-hint" id="cpHint"></div>
+          </div>
+        </div>
+
+        <div class="field-grid-2" style="margin-bottom:12px;">
+          <div class="field">
+            <div class="field-label">País</div>
+            <select class="field-input">
+              <option>México</option>
+              <option>Estados Unidos</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="field-label">Peso (kg)</div>
+            <input class="field-input" id="peso" type="number" value="1" min="0.1" step="0.1" />
+          </div>
+        </div>
+
+        <div class="field-label" style="font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gray-500);margin-bottom:6px;">Dimensiones (Largo × Ancho × Alto cm)</div>
+        <div class="field-grid-3">
+          <input class="field-input" id="largo" type="number" value="10" placeholder="Largo" />
+          <input class="field-input" id="ancho" type="number" value="10" placeholder="Ancho" />
+          <input class="field-input" id="alto"  type="number" value="10" placeholder="Alto" />
+        </div>
+
+        <div class="field-grid-2" style="margin-bottom:14px;">
+          <div class="field">
+            <div class="field-label">Contenido del paquete</div>
+            <input class="field-input" id="articulo" placeholder="Ej. Ropa, Zapatos" />
+          </div>
+          <div class="field">
+            <div class="field-label">Valor declarado ($)</div>
+            <input class="field-input" id="seguro" type="number" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <label class="discount-row">
+          <input type="checkbox" id="descuento" />
+          <div>
+            <div class="discount-row-text">Descuento especial activo</div>
+            <div class="discount-row-sub">Aplica para talabarteros y emprendedores registrados</div>
+          </div>
+        </label>
+
+        <button class="btn btn-primary" onclick="buscarTarifas()">
+          <i data-lucide="search"></i> Buscar tarifas
+        </button>
+      </div>
+
+      <div id="resultados-section" class="hidden">
+        <div class="card-header" style="padding:0 2px 10px;margin-top:4px;">
+          <i data-lucide="check-circle" style="width:16px;height:16px;color:var(--gold);"></i>
+          Tarifas disponibles
+        </div>
+        <div id="lista-tarifas"></div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="bnav-item active" onclick="switchTab('cotizar',this)" data-screen="cotizar">
+        <i data-lucide="search"></i>
+        <span class="bnav-label">Cotizar</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('rastrear',this)" data-screen="rastrear">
+        <i data-lucide="map-pin"></i>
+        <span class="bnav-label">Rastrear</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('envios',this)" data-screen="envios">
+        <i data-lucide="clipboard-list"></i>
+        <span class="bnav-label">Mis envíos</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('perfil',this)" data-screen="perfil">
+        <i data-lucide="user"></i>
+        <span class="bnav-label">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ── RASTREAR ── -->
+  <div class="screen" id="screen-rastrear">
+    <div class="track-search">
+      <div class="track-label">Rastrear envío</div>
+      <div class="track-input-row">
+        <input class="track-input" id="guiaInput" placeholder="Número de guía" maxlength="30" />
+        <button class="btn-track" onclick="rastrearGuia()"><i data-lucide="search"></i></button>
+      </div>
+    </div>
+    <div class="greca-line"></div>
+
+    <div class="scroll-content" style="padding-top:16px;">
+      <div id="track-resultado" class="hidden">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+            <div>
+              <div style="font-size:10px;color:var(--gray-400);font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:3px;">Número de guía</div>
+              <div style="font-size:16px;font-weight:800;color:var(--navy);letter-spacing:.5px;" id="track-guia-num">—</div>
+            </div>
+            <span class="status-pill" id="track-status-badge">—</span>
+          </div>
+          <div class="detail-row"><div class="detail-key">Destino</div><div class="detail-val" id="track-destino">—</div></div>
+          <div class="detail-row"><div class="detail-key">Paquetería</div><div class="detail-val" id="track-paq">—</div></div>
+          <div class="detail-row" style="border-bottom:none;"><div class="detail-key">Entrega estimada</div><div class="detail-val color-orange" id="track-eta">—</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><i data-lucide="map-pin"></i> Seguimiento en tiempo real</div>
+          <div class="track-timeline" id="track-eventos"></div>
+        </div>
+        <button class="btn btn-outline mt-8" onclick="compartirGuia()">
+          <i data-lucide="share-2"></i> Compartir guía
+        </button>
+      </div>
+
+      <div id="track-empty" class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="package-search"></i></div>
+        <div class="empty-state-title">Ingresa tu número de guía</div>
+        <div class="empty-state-sub">Consultamos el estado actualizado de tu envío en tiempo real</div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="bnav-item" onclick="switchTab('cotizar',this)" data-screen="cotizar">
+        <i data-lucide="search"></i><span class="bnav-label">Cotizar</span>
+      </button>
+      <button class="bnav-item active" onclick="switchTab('rastrear',this)" data-screen="rastrear">
+        <i data-lucide="map-pin"></i><span class="bnav-label">Rastrear</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('envios',this)" data-screen="envios">
+        <i data-lucide="clipboard-list"></i><span class="bnav-label">Mis envíos</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('perfil',this)" data-screen="perfil">
+        <i data-lucide="user"></i><span class="bnav-label">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ── MIS ENVÍOS ── -->
+  <div class="screen" id="screen-envios">
+    <div class="app-header">
+      <div class="header-row">
+        <div class="header-brand-name" style="color:white;font-size:16px;font-weight:800;">Mis envíos</div>
+        <div class="header-user"><i data-lucide="calendar" style="width:13px;height:13px;"></i> <span id="envios-mes-badge">—</span></div>
+      </div>
+    </div>
+    <div class="greca-line"></div>
+    <div class="scroll-content">
+      <div id="lista-envios">
+        <div class="empty-state">
+          <div class="empty-state-icon"><i data-lucide="clipboard-list"></i></div>
+          <div class="empty-state-title">Sin envíos registrados</div>
+          <div class="empty-state-sub">Tu historial de envíos aparecerá aquí</div>
+        </div>
+      </div>
+    </div>
+    <nav class="bottom-nav">
+      <button class="bnav-item" onclick="switchTab('cotizar',this)" data-screen="cotizar">
+        <i data-lucide="search"></i><span class="bnav-label">Cotizar</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('rastrear',this)" data-screen="rastrear">
+        <i data-lucide="map-pin"></i><span class="bnav-label">Rastrear</span>
+      </button>
+      <button class="bnav-item active" onclick="switchTab('envios',this)" data-screen="envios">
+        <i data-lucide="clipboard-list"></i><span class="bnav-label">Mis envíos</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('perfil',this)" data-screen="perfil">
+        <i data-lucide="user"></i><span class="bnav-label">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ── PERFIL ── -->
+  <div class="screen" id="screen-perfil">
+    <div class="perfil-hero">
+      <div class="perfil-avatar" id="perfil-avatar">?</div>
+      <div class="perfil-name" id="perfil-nombre">—</div>
+      <div class="perfil-sub"  id="perfil-email">—</div>
+      <div class="perfil-stats">
+        <div class="perfil-stat">
+          <div class="perfil-stat-num" id="perfil-stat-envios">0</div>
+          <div class="perfil-stat-label">Envíos</div>
+        </div>
+        <div class="perfil-stat">
+          <div class="perfil-stat-num" id="perfil-stat-transito">0</div>
+          <div class="perfil-stat-label">En tránsito</div>
+        </div>
+        <div class="perfil-stat">
+          <div class="perfil-stat-num" id="perfil-stat-total">$0</div>
+          <div class="perfil-stat-label">Total enviado</div>
+        </div>
+      </div>
+    </div>
+    <div class="greca-line"></div>
+
+    <div style="background:white;">
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-icon"><i data-lucide="map-pin"></i></div>
+          <div>
+            <div class="menu-label">Mis direcciones guardadas</div>
+            <div class="menu-sub" id="perfil-direcciones-sub">—</div>
+          </div>
+        </div>
+        <div class="menu-arrow"><i data-lucide="chevron-right"></i></div>
+      </div>
+      <div class="menu-item">
+        <div class="menu-item-left">
+          <div class="menu-icon"><i data-lucide="tag"></i></div>
+          <div>
+            <div class="menu-label">Descuento especial</div>
+            <div class="menu-sub" id="perfil-descuento-sub">Sin descuento activo</div>
+          </div>
+        </div>
+        <div class="menu-arrow"><i data-lucide="chevron-right"></i></div>
+      </div>
+      <div class="menu-item" onclick="showToast('Configuración de notificaciones — próximamente')">
+        <div class="menu-item-left">
+          <div class="menu-icon"><i data-lucide="bell"></i></div>
+          <div>
+            <div class="menu-label">Notificaciones</div>
+            <div class="menu-sub">WhatsApp y push</div>
+          </div>
+        </div>
+        <div class="menu-arrow"><i data-lucide="chevron-right"></i></div>
+      </div>
+      <div class="menu-item" onclick="doLogout()">
+        <div class="menu-item-left">
+          <div class="menu-icon" style="background:var(--red-lt);color:var(--red);"><i data-lucide="log-out"></i></div>
+          <div><div class="menu-label" style="color:var(--red);">Cerrar sesión</div></div>
+        </div>
+        <div class="menu-arrow"><i data-lucide="chevron-right"></i></div>
+      </div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="bnav-item" onclick="switchTab('cotizar',this)" data-screen="cotizar">
+        <i data-lucide="search"></i><span class="bnav-label">Cotizar</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('rastrear',this)" data-screen="rastrear">
+        <i data-lucide="map-pin"></i><span class="bnav-label">Rastrear</span>
+      </button>
+      <button class="bnav-item" onclick="switchTab('envios',this)" data-screen="envios">
+        <i data-lucide="clipboard-list"></i><span class="bnav-label">Mis envíos</span>
+      </button>
+      <button class="bnav-item active" onclick="switchTab('perfil',this)" data-screen="perfil">
+        <i data-lucide="user"></i><span class="bnav-label">Perfil</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ── CHECKOUT ── -->
+  <div class="screen" id="screen-checkout">
+    <div class="app-header" style="padding-bottom:14px;">
+      <div class="header-row">
+        <button class="header-back" onclick="goBack()">
+          <i data-lucide="arrow-left" style="width:18px;height:18px;"></i> Atrás
+        </button>
+        <div class="header-title">Confirmar envío</div>
+        <div style="width:60px;"></div>
+      </div>
+    </div>
+    <div class="step-bar">
+      <div class="step-item"><div class="step-circle done" id="step1"><i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i></div><div class="step-line done"></div></div>
+      <div class="step-item"><div class="step-circle active" id="step2">2</div><div class="step-line" id="line2"></div></div>
+      <div class="step-item"><div class="step-circle pending" id="step3">3</div><div class="step-line" id="line3"></div></div>
+      <div class="step-item" style="flex:0;"><div class="step-circle pending" id="step4">4</div></div>
+    </div>
+    <div class="scroll-content" id="checkout-content"></div>
+  </div>
+
+  <!-- ── CONFIRMACIÓN ── -->
+  <div class="screen" id="screen-confirmacion">
+    <div class="confirm-hero">
+      <div class="confirm-check"><i data-lucide="check"></i></div>
+      <div class="confirm-title">Envío registrado</div>
+      <div class="confirm-sub">Tu paquete está en proceso</div>
+    </div>
+    <div class="greca-line"></div>
+
+    <div class="scroll-content">
+      <div class="guia-box">
+        <div class="guia-label">Número de guía</div>
+        <div class="guia-number" id="guia-generada">—</div>
+        <div class="guia-line"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><i data-lucide="clipboard-list"></i> Detalle del envío</div>
+        <div class="detail-row"><div class="detail-key">Paquetería</div><div class="detail-val" id="conf-paq">—</div></div>
+        <div class="detail-row"><div class="detail-key">Tipo de entrega</div><div class="detail-val" id="conf-tipo">—</div></div>
+        <div class="detail-row"><div class="detail-key">Destinatario</div><div class="detail-val" id="conf-dest">—</div></div>
+        <div class="detail-row"><div class="detail-key">Destino</div><div class="detail-val" id="conf-ciudad">—</div></div>
+        <div class="detail-row"><div class="detail-key">Entrega estimada</div><div class="detail-val color-orange" id="conf-eta">—</div></div>
+        <div class="detail-row"><div class="detail-key">Total cobrado</div><div class="detail-val font-bold color-orange" id="conf-total">—</div></div>
+      </div>
+
+      <div id="conf-oficina-msg" class="info-box blue hidden">
+        <div class="info-box-icon"><i data-lucide="building-2"></i></div>
+        <div class="info-box-text">
+          <div class="info-box-title">Lleva tu paquete a la oficina</div>
+          La guía estará lista e impresa cuando llegues. Presenta este número: <strong id="conf-guia-ref">—</strong>
+        </div>
+      </div>
+
+      <div id="conf-recoleccion-msg" class="info-box green hidden">
+        <div class="info-box-icon"><i data-lucide="truck"></i></div>
+        <div class="info-box-text">
+          <div class="info-box-title">Recolección programada</div>
+          El operador ya fue notificado. Pasarán por tu paquete en el horario acordado.
+        </div>
+      </div>
+
+      <button class="btn btn-orange" onclick="compartirGuia()" style="margin-bottom:10px;">
+        <i data-lucide="share-2"></i> Compartir guía con destinatario
+      </button>
+      <button class="btn btn-outline" onclick="showToast('Generación de PDF disponible próximamente')">
+        <i data-lucide="printer"></i> Imprimir ticket
+      </button>
+      <button class="btn btn-ghost mt-8" onclick="nuevoEnvio()">
+        <i data-lucide="plus"></i> Nuevo envío
+      </button>
+    </div>
+  </div>
+
+</div><!-- /main-app -->
+
+<script>
+// ════════════════════════════════════════════════════
+// SUPABASE
+// ════════════════════════════════════════════════════
+const { createClient } = supabase;
+const sb = createClient(
+  'https://lligzxpgsnugzabaavpo.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsaWd6eHBnc251Z3phYmFhdnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDkxNjAsImV4cCI6MjA5MzkyNTE2MH0.FhNl3CiCTDJOhftmd2TDflB4WjZIHqwtUaVwS3YgO2E'
+);
+
+// ════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ════════════════════════════════════════════════════
+let appState = {
+  session:       null,
+  perfil:        null,
+  envios:        [],
+  tarifas:       [],
+  isGuest:       false,
+  selectedTarifa: null,
+  checkoutStep:  2,
+  modoEntrega:   null,
+};
+
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8787/api'
+  : '/api';
+
+const CARRIER_LOGO = { estafeta:'logo-estafeta', dhl:'logo-dhl', fedex:'logo-fedex', ups:'logo-ups' };
+
+const CP_DB = {
+  '44100':'Guadalajara, Jalisco', '44200':'Guadalajara, Jalisco',
+  '44600':'Guadalajara, Jalisco', '45000':'Zapopan, Jalisco',
+  '45100':'Zapopan, Jalisco',     '45200':'Zapopan, Jalisco',
+  '46200':'Colotlán, Jalisco',    '99800':'Teul de González, Zacatecas',
+  '06600':'Ciudad de México, CDMX','64000':'Monterrey, Nuevo León',
+  '20000':'Aguascalientes, Ags.', '28000':'Colima, Colima',
+};
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+(async () => {
+  showLoading('Cargando...');
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    appState.session = session;
+    await cargarPerfil(session.user.id);
+    launchApp(false);
+  } else {
+    hideLoading();
+    document.getElementById('screen-login').style.display = 'flex';
+    renderIcons();
+  }
+  sb.auth.onAuthStateChange(async (_event, session) => {
+    if (session && !appState.session) {
+      appState.session = session;
+      await cargarPerfil(session.user.id);
+      launchApp(false);
+    }
+  });
+})();
+
+function renderIcons() {
+  if (window.lucide) lucide.createIcons();
+}
+
+// ════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════
+async function doLogin() {
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl    = document.getElementById('login-error');
+  errEl.classList.add('hidden');
+  if (!email || !password) { errEl.textContent = 'Completa todos los campos.'; errEl.classList.remove('hidden'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true;
+  showLoading('Iniciando sesión...');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  hideLoading();
+  btn.disabled = false;
+  if (error) {
+    errEl.textContent = error.message.includes('Invalid') ? 'Correo o contraseña incorrectos.' : error.message;
+    errEl.classList.remove('hidden');
+    return;
+  }
+  appState.session = data.session;
+  await cargarPerfil(data.user.id);
+  document.getElementById('screen-login').style.display = 'none';
+  launchApp(false);
+}
+
+async function doRegister() {
+  const nombre   = document.getElementById('reg-nombre').value.trim();
+  const apellido = document.getElementById('reg-apellido').value.trim();
+  const telefono = document.getElementById('reg-telefono').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const errEl    = document.getElementById('reg-error');
+  errEl.classList.add('hidden');
+  if (!nombre || !telefono || !email || !password) { errEl.textContent = 'Completa los campos obligatorios.'; errEl.classList.remove('hidden'); return; }
+  if (telefono.length !== 10 || isNaN(telefono)) { errEl.textContent = 'El teléfono debe tener 10 dígitos.'; errEl.classList.remove('hidden'); return; }
+  if (password.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.classList.remove('hidden'); return; }
+  const btn = document.getElementById('btn-register');
+  btn.disabled = true;
+  showLoading('Creando tu cuenta...');
+  const { data, error } = await sb.auth.signUp({ email, password, options: { data: { nombre, apellido, telefono } } });
+  if (error) {
+    hideLoading(); btn.disabled = false;
+    errEl.textContent = error.message.includes('already') ? 'Este correo ya está registrado.' : error.message;
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (data.user) {
+    await sb.from('usuarios').upsert({ id:data.user.id, nombre, apellido, telefono, email, rol:'cliente' }, { onConflict:'id' });
+  }
+  hideLoading(); btn.disabled = false;
+  if (data.session) {
+    appState.session = data.session;
+    await cargarPerfil(data.user.id);
+    document.getElementById('screen-login').style.display = 'none';
+    launchApp(false);
+  } else {
+    showToast('Cuenta creada. Revisa tu correo para confirmar.');
+    switchLoginTab('ingresar', document.querySelectorAll('.login-tab')[0]);
+  }
+}
+
+function doGuest() {
+  appState.isGuest = true;
+  document.getElementById('screen-login').style.display = 'none';
+  launchApp(true);
+}
+
+async function doLogout() {
+  showLoading('Cerrando sesión...');
+  await sb.auth.signOut();
+  Object.assign(appState, { session:null, perfil:null, isGuest:false, envios:[], tarifas:[] });
+  hideLoading();
+  document.getElementById('main-app').classList.add('hidden');
+  document.getElementById('screen-login').style.display = 'flex';
+  renderIcons();
+}
+
+async function cargarPerfil(userId) {
+  const { data } = await sb.from('usuarios').select('*').eq('id', userId).single();
+  if (data) appState.perfil = data;
+}
+
+// ════════════════════════════════════════════════════
+// LAUNCH
+// ════════════════════════════════════════════════════
+function launchApp(guest) {
+  const app = document.getElementById('main-app');
+  app.classList.remove('hidden');
+  app.style.display = 'block';
+  hideLoading();
+  actualizarUI();
+  renderEnvios();
+  showScreen('cotizar');
+  renderIcons();
+}
+
+function actualizarUI() {
+  const p      = appState.perfil;
+  const nombre = p?.nombre || (appState.isGuest ? 'Invitado' : 'Usuario');
+  document.getElementById('header-user-name').textContent = nombre;
+  document.getElementById('perfil-avatar').textContent    = nombre.charAt(0).toUpperCase();
+  document.getElementById('perfil-nombre').textContent    = p ? `${p.nombre} ${p.apellido || ''}`.trim() : 'Invitado';
+  document.getElementById('perfil-email').textContent     = p?.telefono ? `+52 ${p.telefono}` : (appState.session?.user?.email || '—');
+  const mes = new Date().toLocaleString('es-MX', { month:'long', year:'numeric' });
+  document.getElementById('envios-mes-badge').textContent = mes;
+  if (p?.tiene_descuento) {
+    const sub = document.getElementById('perfil-descuento-sub');
+    sub.textContent = `Activo — ${p.tipo_descuento || 'Especial'}`;
+    sub.style.color = 'var(--green)';
+  }
+}
+
+// ════════════════════════════════════════════════════
+// ENVÍOS
+// ════════════════════════════════════════════════════
+async function renderEnvios() {
+  if (appState.isGuest || !appState.session) {
+    document.getElementById('lista-envios').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="lock"></i></div>
+        <div class="empty-state-title">Inicia sesión para ver tus envíos</div>
+        <div class="empty-state-sub">Tu historial se guarda de forma segura en tu cuenta</div>
+        <button class="btn btn-primary" style="margin-top:20px;width:auto;padding:11px 24px;" onclick="doLogout()">
+          <i data-lucide="log-in"></i> Iniciar sesión
+        </button>
+      </div>`;
+    renderIcons();
+    return;
+  }
+  const { data: envios, error } = await sb.from('envios').select('*').eq('usuario_id', appState.session.user.id).order('created_at', { ascending:false }).limit(20);
+  if (error) { showToast('Error al cargar envíos'); return; }
+  appState.envios = envios || [];
+  actualizarEstadisticas();
+  if (!appState.envios.length) {
+    document.getElementById('lista-envios').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon"><i data-lucide="inbox"></i></div>
+        <div class="empty-state-title">Sin envíos aún</div>
+        <div class="empty-state-sub">Tu primer envío aparecerá aquí una vez registrado</div>
+      </div>`;
+    renderIcons();
+    return;
+  }
+  const STATUS = {
+    pendiente:   { label:'Por enviar',   cls:'pill-pendiente' },
+    en_transito: { label:'En tránsito',  cls:'pill-transito'  },
+    entregado:   { label:'Entregado',    cls:'pill-entregado' },
+    cancelado:   { label:'Cancelado',    cls:'pill-cancelado' },
+  };
+  document.getElementById('lista-envios').innerHTML = appState.envios.map(e => {
+    const s    = STATUS[e.status] || { label:e.status, cls:'pill-pendiente' };
+    const fecha = new Date(e.created_at).toLocaleDateString('es-MX', { day:'2-digit', month:'short' });
+    return `
+      <div class="envio-card ${e.status}">
+        <div class="envio-top">
+          <div class="envio-guia">${e.guia}</div>
+          <span class="status-pill ${s.cls}">${s.label}</span>
+        </div>
+        <div class="envio-dest">Para <strong>${e.destinatario_nombre || '—'}</strong></div>
+        <div class="envio-dest" style="font-size:12px;color:var(--gray-500);">${e.ciudad_destino || e.cp_destino || '—'}</div>
+        <div class="envio-meta">
+          <span><i data-lucide="calendar"></i>${fecha}</span>
+          <span><i data-lucide="truck"></i>${e.carrier}</span>
+          <span><i data-lucide="banknote"></i>$${Number(e.precio).toFixed(0)} MXN</span>
+        </div>
+        <div class="envio-actions">
+          <button class="btn btn-sm btn-outline" onclick="rastrearDesdeHistorial('${e.guia}')">
+            <i data-lucide="map-pin"></i> Rastrear
+          </button>
+          <button class="btn btn-sm btn-ghost" onclick="copiarGuia('${e.guia}')">
+            <i data-lucide="copy"></i> Copiar guía
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+  renderIcons();
+}
+
+function actualizarEstadisticas() {
+  const envios     = appState.envios;
+  const total      = envios.reduce((s,e) => s + Number(e.precio), 0);
+  const enTransito = envios.filter(e => e.status === 'en_transito').length;
+  document.getElementById('perfil-stat-envios').textContent  = envios.length;
+  document.getElementById('perfil-stat-transito').textContent = enTransito;
+  document.getElementById('perfil-stat-total').textContent   = `$${total.toFixed(0)}`;
+  document.getElementById('perfil-direcciones-sub').textContent = '0 direcciones guardadas';
+}
+
+// ════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ════════════════════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('#main-app .screen').forEach(s => s.classList.remove('active'));
+  const s = document.getElementById('screen-' + name);
+  if (s) s.classList.add('active');
+  if (name === 'envios') renderEnvios();
+  renderIcons();
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  showScreen(name);
+}
+
+function switchLoginTab(tab, el) {
+  document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-ingresar').classList.toggle('hidden', tab !== 'ingresar');
+  document.getElementById('tab-registrar').classList.toggle('hidden', tab !== 'registrar');
+}
+
+function goBack()     { showScreen('cotizar'); }
+function nuevoEnvio() { showScreen('cotizar'); }
+
+// ════════════════════════════════════════════════════
+// CP LOOKUP
+// ════════════════════════════════════════════════════
+function lookupCP(val) {
+  const hint = document.getElementById('cpHint');
+  hint.textContent = (val.length === 5 && CP_DB[val]) ? CP_DB[val] : (val.length === 5 ? 'CP válido' : '');
+}
+
+// ════════════════════════════════════════════════════
+// COTIZADOR — Envia.com via Worker
+// ════════════════════════════════════════════════════
+async function buscarTarifas() {
+  const cp = document.getElementById('cpDestino').value.trim();
+  if (cp.length !== 5) { showToast('Ingresa un CP destino de 5 dígitos'); return; }
+  showLoading('Cotizando con las paqueterías...');
+  document.getElementById('resultados-section').classList.add('hidden');
+  try {
+    const res = await fetch(`${API_BASE}/rate`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        cpDestino: cp,
+        peso:    parseFloat(document.getElementById('peso').value)  || 1,
+        largo:   parseFloat(document.getElementById('largo').value) || 10,
+        ancho:   parseFloat(document.getElementById('ancho').value) || 10,
+        alto:    parseFloat(document.getElementById('alto').value)  || 10,
+        articulo: document.getElementById('articulo').value || 'Paquete',
+        seguro:  parseFloat(document.getElementById('seguro').value) || 0,
+      }),
+    });
+    const data = await res.json();
+    hideLoading();
+    if (!res.ok || !data.tarifas?.length) { showToast(data.error || 'Sin tarifas para ese destino'); return; }
+    appState.tarifas = data.tarifas;
+    renderTarifas();
+    document.getElementById('resultados-section').classList.remove('hidden');
+    document.getElementById('resultados-section').scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch {
+    hideLoading();
+    showToast('Sin conexión al servidor. Ejecuta: npx wrangler dev');
+  }
+}
+
+function renderTarifas() {
+  const desc  = document.getElementById('descuento').checked;
+  const lista = document.getElementById('lista-tarifas');
+  lista.innerHTML = appState.tarifas.map((t, i) => {
+    const precio    = desc ? Math.round(t.precio * 0.9 * 100) / 100 : t.precio;
+    const logoClass = CARRIER_LOGO[t.carrier.toLowerCase()] || 'logo-estafeta';
+    const tag       = t.carrier.toUpperCase().substring(0, 7);
+    return `
+      <div class="tarifa-card" onclick="elegirTarifa(${i},${precio})" id="tarifa-${i}">
+        <div class="tarifa-logo ${logoClass}">${tag}</div>
+        <div class="tarifa-info">
+          <div class="tarifa-carrier">${t.carrier}</div>
+          <div class="tarifa-service">${t.serviceLabel}</div>
+          <div class="tarifa-eta">${t.entregaEstimada}</div>
+        </div>
+        <div class="tarifa-price">$${precio.toFixed(0)}</div>
+      </div>`;
+  }).join('');
+  renderIcons();
+}
+
+function elegirTarifa(i, precio) {
+  document.querySelectorAll('.tarifa-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('tarifa-' + i).classList.add('selected');
+  const t = appState.tarifas[i];
+  appState.selectedTarifa = { carrier:t.carrier, servicio:t.serviceLabel, precio, dias:t.entregaEstimada, quoteId:t.quoteId, service:t.service };
+  setTimeout(() => iniciarCheckout(), 350);
+}
+
+// ════════════════════════════════════════════════════
+// CHECKOUT
+// ════════════════════════════════════════════════════
+function iniciarCheckout() {
+  if (appState.isGuest) { showToast('Inicia sesión para registrar un envío'); return; }
+  appState.checkoutStep = 2;
+  appState.modoEntrega  = null;
+  showScreen('checkout');
+  renderCheckoutStep();
+}
+
+function renderCheckoutStep() {
+  const t       = appState.selectedTarifa;
+  const content = document.getElementById('checkout-content');
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step' + i);
+    if (i < appState.checkoutStep)       { el.className = 'step-circle done';    el.innerHTML = '<i data-lucide="check" style="width:12px;height:12px;stroke-width:3;"></i>'; }
+    else if (i === appState.checkoutStep) { el.className = 'step-circle active';  el.textContent = i; }
+    else                                 { el.className = 'step-circle pending'; el.textContent = i; }
+    if (i < 4) { const ln = document.getElementById('line'+i); if(ln) ln.className = 'step-line'+(i<appState.checkoutStep?' done':''); }
+  }
+
+  if (appState.checkoutStep === 2) {
+    content.innerHTML = `
+      <div class="card">
+        <div class="card-header"><i data-lucide="truck"></i> Modo de entrega</div>
+        <div class="entrega-grid">
+          <div class="entrega-card ${appState.modoEntrega==='oficina'?'selected':''}" onclick="selectEntrega('oficina')">
+            <div class="entrega-card-icon"><i data-lucide="building-2"></i></div>
+            <div class="entrega-card-title">Lo llevo a la oficina</div>
+            <div class="entrega-card-desc">La guía estará lista e impresa cuando llegues</div>
+            <span class="entrega-badge badge-blue">Sin costo extra</span>
+          </div>
+          <div class="entrega-card ${appState.modoEntrega==='recoleccion'?'selected':''}" onclick="selectEntrega('recoleccion')">
+            <div class="entrega-card-icon"><i data-lucide="truck"></i></div>
+            <div class="entrega-card-title">Recolección a domicilio</div>
+            <div class="entrega-card-desc">El operador pasa por tu paquete</div>
+            <span class="entrega-badge badge-green">Conveniente</span>
+          </div>
+        </div>
+
+        <div id="recoleccion-form" class="${appState.modoEntrega==='recoleccion'?'':'hidden'}">
+          <div class="divider-label"><span class="divider-text">Datos de recolección</span></div>
+          <div class="field-grid-1">
+            <div class="field"><div class="field-label">Dirección completa</div>
+            <input class="field-input" id="rec-direccion" placeholder="Calle, número, colonia" /></div>
+          </div>
+          <div class="field-grid-2">
+            <div class="field"><div class="field-label">Horario preferido</div>
+            <select class="field-input" id="rec-horario">
+              <option>9:00 — 12:00</option><option>12:00 — 15:00</option><option>15:00 — 18:00</option>
+            </select></div>
+            <div class="field"><div class="field-label">Fecha</div>
+            <input class="field-input" id="rec-fecha" type="date" /></div>
+          </div>
+        </div>
+
+        <div style="background:var(--gray-50);border-radius:var(--radius);padding:12px;margin-bottom:14px;">
+          <div style="font-size:11px;color:var(--gray-500);margin-bottom:3px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;">Tarifa seleccionada</div>
+          <div style="font-size:14px;font-weight:700;color:var(--navy);">${t.carrier} · ${t.servicio}</div>
+          <div style="font-size:22px;font-weight:800;color:var(--orange);">$${t.precio} MXN</div>
+        </div>
+        <button class="btn btn-primary" onclick="nextStep()">
+          <i data-lucide="arrow-right"></i> Continuar
+        </button>
+      </div>`;
+
+  } else if (appState.checkoutStep === 3) {
+    const p = appState.perfil;
+    const cp = document.getElementById('cpDestino').value;
+    content.innerHTML = `
+      <div class="card">
+        <div class="card-header"><i data-lucide="user"></i> Remitente</div>
+        <div class="field-grid-2">
+          <div class="field"><div class="field-label">Nombre *</div><input class="field-input" id="rem-nombre" value="${p?.nombre||''}" /></div>
+          <div class="field"><div class="field-label">Apellido</div><input class="field-input" id="rem-apellido" value="${p?.apellido||''}" /></div>
+        </div>
+        <div class="field-grid-2">
+          <div class="field"><div class="field-label">Teléfono *</div><input class="field-input" id="rem-telefono" value="${p?.telefono||''}" /></div>
+          <div class="field"><div class="field-label">Empresa</div><input class="field-input" id="rem-empresa" placeholder="Opcional" /></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i data-lucide="map-pin"></i> Destinatario</div>
+        <div class="field-grid-2">
+          <div class="field"><div class="field-label">Nombre *</div><input class="field-input" id="dest-nombre" placeholder="Nombre" /></div>
+          <div class="field"><div class="field-label">Apellido</div><input class="field-input" id="dest-apellido" placeholder="Apellido" /></div>
+        </div>
+        <div class="field-grid-2">
+          <div class="field"><div class="field-label">Teléfono *</div><input class="field-input" id="dest-telefono" placeholder="10 dígitos" /></div>
+          <div class="field"><div class="field-label">Correo</div><input class="field-input" id="dest-email" type="email" placeholder="Opcional" /></div>
+        </div>
+        <div class="field-grid-2">
+          <div class="field"><div class="field-label">CP Destino</div><input class="field-input" id="dest-cp" value="${cp}" /></div>
+          <div class="field"><div class="field-label">Ciudad / Estado</div><input class="field-input" id="dest-ciudad" value="${CP_DB[cp]||''}" /></div>
+        </div>
+        <div class="field-grid-2">
+          <div class="field"><div class="field-label">Colonia *</div><input class="field-input" id="dest-colonia" placeholder="Colonia" /></div>
+          <div class="field"><div class="field-label">Calle y número *</div><input class="field-input" id="dest-calle" placeholder="Morelos 123" /></div>
+        </div>
+        <div class="field-grid-1">
+          <div class="field"><div class="field-label">Referencias</div><input class="field-input" id="dest-referencias" placeholder="Ej. Casa verde, portón negro" /></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="nextStep()">
+        <i data-lucide="arrow-right"></i> Continuar
+      </button>`;
+
+  } else if (appState.checkoutStep === 4) {
+    content.innerHTML = `
+      <div class="card">
+        <div class="card-header"><i data-lucide="receipt"></i> Resumen del envío</div>
+        <div class="detail-row"><div class="detail-key">Paquetería</div><div class="detail-val">${t.carrier} · ${t.servicio}</div></div>
+        <div class="detail-row"><div class="detail-key">Entrega</div><div class="detail-val">${appState.modoEntrega==='recoleccion'?'Recolección a domicilio':'Lo llevo a la oficina'}</div></div>
+        <div class="detail-row"><div class="detail-key">Tiempo estimado</div><div class="detail-val">${t.dias}</div></div>
+        <div class="detail-row" style="border-top:1.5px solid var(--gray-200);margin-top:6px;padding-top:12px;">
+          <div class="detail-key" style="font-weight:700;font-size:14px;">Total a cobrar</div>
+          <div class="detail-val" style="font-size:22px;color:var(--orange);font-weight:800;">$${t.precio} MXN</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><i data-lucide="credit-card"></i> Método de pago</div>
+        <select class="field-input" id="metodo-pago" style="margin-bottom:12px;">
+          <option value="efectivo">Efectivo en oficina</option>
+          <option value="transferencia">Transferencia bancaria</option>
+        </select>
+        <div class="info-box yellow">
+          <div class="info-box-icon"><i data-lucide="alert-circle"></i></div>
+          <div class="info-box-text">El pago se realiza al momento de entregar el paquete en la oficina o en la recolección.</div>
+        </div>
+      </div>
+      <button class="btn btn-green" id="btn-registrar-venta" onclick="registrarVenta()" style="margin-bottom:10px;">
+        <i data-lucide="check-circle"></i> Registrar y generar guía
+      </button>
+      <button class="btn btn-ghost" onclick="appState.checkoutStep=3;renderCheckoutStep()">
+        <i data-lucide="arrow-left"></i> Editar datos
+      </button>`;
+  }
+  renderIcons();
+}
+
+function selectEntrega(modo) { appState.modoEntrega = modo; renderCheckoutStep(); }
+
+function nextStep() {
+  if (appState.checkoutStep === 2 && !appState.modoEntrega) { showToast('Selecciona el modo de entrega'); return; }
+  if (appState.checkoutStep === 3) {
+    if (!document.getElementById('rem-nombre').value.trim()   ||
+        !document.getElementById('dest-nombre').value.trim()  ||
+        !document.getElementById('dest-telefono').value.trim()||
+        !document.getElementById('dest-calle').value.trim()) {
+      showToast('Completa los campos obligatorios (*)'); return;
+    }
+  }
+  appState.checkoutStep++;
+  renderCheckoutStep();
+  document.getElementById('checkout-content').scrollTop = 0;
+}
+
+async function registrarVenta() {
+  const t   = appState.selectedTarifa;
+  const btn = document.getElementById('btn-registrar-venta');
+  btn.disabled = true;
+  showLoading('Registrando envío...');
+  const guia = generarGuiaMock(t.carrier);
+  const envio = {
+    usuario_id:           appState.session.user.id,
+    guia, carrier:t.carrier, servicio:t.servicio, precio:t.precio,
+    peso:   parseFloat(document.getElementById('peso').value)  || 1,
+    largo:  parseFloat(document.getElementById('largo').value) || 10,
+    ancho:  parseFloat(document.getElementById('ancho').value) || 10,
+    alto:   parseFloat(document.getElementById('alto').value)  || 10,
+    articulo:             document.getElementById('articulo').value  || null,
+    seguro:               parseFloat(document.getElementById('seguro').value) || null,
+    descuento_aplicado:   document.getElementById('descuento').checked,
+    modo_entrega:         appState.modoEntrega,
+    status:               'pendiente',
+    cp_origen:            '46200',
+    cp_destino:           document.getElementById('dest-cp').value,
+    ciudad_destino:       document.getElementById('dest-ciudad').value,
+    remitente_nombre:     document.getElementById('rem-nombre').value.trim(),
+    remitente_telefono:   document.getElementById('rem-telefono').value.trim(),
+    destinatario_nombre:  (document.getElementById('dest-nombre').value.trim()+' '+document.getElementById('dest-apellido').value.trim()).trim(),
+    destinatario_telefono:document.getElementById('dest-telefono').value.trim(),
+    destinatario_email:   document.getElementById('dest-email').value.trim() || null,
+    destinatario_calle:   document.getElementById('dest-calle').value.trim(),
+    destinatario_colonia: document.getElementById('dest-colonia').value.trim(),
+    destinatario_ciudad:  document.getElementById('dest-ciudad').value,
+    destinatario_referencias: document.getElementById('dest-referencias').value.trim() || null,
+    metodo_pago:          document.getElementById('metodo-pago').value,
+  };
+  const { error } = await sb.from('envios').insert(envio);
+  hideLoading();
+  if (error) { showToast('Error al registrar: ' + error.message); btn.disabled=false; return; }
+  document.getElementById('guia-generada').textContent   = guia;
+  document.getElementById('conf-guia-ref').textContent   = guia;
+  document.getElementById('conf-paq').textContent        = `${t.carrier} · ${t.servicio}`;
+  document.getElementById('conf-tipo').textContent       = appState.modoEntrega==='recoleccion' ? 'Recolección a domicilio' : 'Lo llevo a la oficina';
+  document.getElementById('conf-dest').textContent       = envio.destinatario_nombre;
+  document.getElementById('conf-ciudad').textContent     = envio.ciudad_destino || envio.cp_destino;
+  document.getElementById('conf-eta').textContent        = t.dias;
+  document.getElementById('conf-total').textContent      = `$${t.precio} MXN`;
+  document.getElementById('conf-oficina-msg').classList.toggle('hidden',    appState.modoEntrega==='recoleccion');
+  document.getElementById('conf-recoleccion-msg').classList.toggle('hidden', appState.modoEntrega!=='recoleccion');
+  showScreen('confirmacion');
+  showToast('Guía generada correctamente');
+}
+
+function generarGuiaMock(carrier) {
+  const p = { Estafeta:'EST', DHL:'DHL', FedEx:'FDX', UPS:'UPS' };
+  return `${p[carrier]||'PKG'}-2025-${String(Math.floor(Math.random()*90000)+10000)}`;
+}
+
+// ════════════════════════════════════════════════════
+// RASTREO
+// ════════════════════════════════════════════════════
+function rastrearGuia() {
+  const guia = document.getElementById('guiaInput').value.trim().toUpperCase();
+  if (!guia) { showToast('Ingresa un número de guía'); return; }
+  showLoading('Consultando estatus...');
+  setTimeout(() => {
+    hideLoading();
+    renderTracking(guia, {
+      destino: 'Guadalajara, Jalisco', carrier: 'Estafeta', eta: '2-4 días hábiles', status: 'En tránsito',
+      eventos: [
+        { icon:'check',        texto:'Envío registrado',        lugar:'Paquetería Colotlán AP001',         hora:'Hoy',       estado:'done'    },
+        { icon:'truck',        texto:'En tránsito',             lugar:'Centro de distribución Guadalajara',hora:'En curso',  estado:'active'  },
+        { icon:'map-pin',      texto:'Llegó a ciudad destino',  lugar:'—',                                hora:'Pendiente', estado:'pending' },
+        { icon:'check-circle', texto:'Entregado',               lugar:'—',                                hora:'Pendiente', estado:'pending' },
+      ]
+    });
+  }, 1200);
+}
+
+function renderTracking(guia, data) {
+  document.getElementById('track-empty').classList.add('hidden');
+  document.getElementById('track-resultado').classList.remove('hidden');
+  document.getElementById('track-guia-num').textContent = guia;
+  document.getElementById('track-destino').textContent  = data.destino;
+  document.getElementById('track-paq').textContent      = data.carrier;
+  document.getElementById('track-eta').textContent      = data.eta;
+  const badge = document.getElementById('track-status-badge');
+  badge.textContent = data.status;
+  badge.className   = 'status-pill pill-transito';
+  document.getElementById('track-eventos').innerHTML = data.eventos.map((e, i) => `
+    <div class="track-step">
+      <div class="track-left">
+        <div class="track-dot ${e.estado}"><i data-lucide="${e.icon}"></i></div>
+        ${i < data.eventos.length-1 ? `<div class="track-connector ${e.estado==='done'?'done':''}"></div>` : ''}
+      </div>
+      <div class="track-body">
+        <div class="track-event ${e.estado}">${e.texto}</div>
+        <div class="track-loc">${e.lugar}</div>
+        <div class="track-time">${e.hora}</div>
+      </div>
+    </div>`).join('');
+  renderIcons();
+}
+
+function rastrearDesdeHistorial(guia) {
+  switchTab('rastrear', document.querySelectorAll('.bnav-item')[1]);
+  document.getElementById('guiaInput').value = guia;
+  rastrearGuia();
+}
+
+// ════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════
+function copiarGuia(guia) {
+  navigator.clipboard.writeText(guia).then(() => showToast('Guía copiada: ' + guia));
+}
+
+function compartirGuia() {
+  const guia = document.getElementById('guia-generada').textContent;
+  if (navigator.share) {
+    navigator.share({ title:'Guía de envío', text:`Rastrea tu paquete: ${guia}` });
+  } else {
+    copiarGuia(guia);
+  }
+}
+
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loading').classList.remove('hidden');
+}
+function hideLoading() {
+  document.getElementById('loading').classList.add('hidden');
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
