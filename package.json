@@ -2,10 +2,12 @@
   "name": "paqueteria-colotlan",
   "private": true,
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "dev": "npx wrangler dev --port 8787",
+    "deploy": "npx wrangler pages deploy . --project-name paqueteria-colotlan",
+    "deploy:worker": "npx wrangler deploy",
+    "secret:token": "npx wrangler pages secret put ENVIA_API_TOKEN --project-name paqueteria-colotlan"
   },
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "wrangler": "^4.90.0"
   }
 }

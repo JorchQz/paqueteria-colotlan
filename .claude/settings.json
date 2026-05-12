@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem \"c:\\\\VS Code\\\\paqueteria-colotlan\" -Recurse)",
+      "Bash(Select-Object FullName, Length)",
+      "Bash(Sort-Object FullName)",
+      "mcp__claude_ai_Supabase__list_projects",
+      "Read(//c/Users/jorge/.claude/**)",
+      "Bash(claude mcp *)",
+      "mcp__supabase-paqueteria__list_projects",
+      "mcp__supabase-paqueteria__apply_migration",
+      "mcp__supabase-paqueteria__list_tables",
+      "Bash(npx wrangler *)",
+      "Bash(curl -s -X POST http://localhost:8787/api/rate -H \"Content-Type: application/json\" -d \"{\\\\\"cpDestino\\\\\":\\\\\"44100\\\\\",\\\\\"peso\\\\\":1,\\\\\"largo\\\\\":10,\\\\\"ancho\\\\\":10,\\\\\"alto\\\\\":10}\")",
+      "mcp__supabase-paqueteria__execute_sql",
+      "mcp__supabase-paqueteria__get_logs"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\jorge\\.claude"
+    ]
+  }
+}

@@ -1,52 +1,92 @@
-/* ===========================
-   BASE — reset, tokens, tipografía
-   =========================== */
+/* === BASE — tokens, reset, tipografía, utilidades === */
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --navy:   #0D1B3E;
-  --orange: #F97316;
-  --cream:  #F8F5F0;
-  --green:  #16A34A;
-  --red:    #DC2626;
-  --gray-100: #F3F4F6;
-  --gray-300: #D1D5DB;
-  --gray-500: #6B7280;
-  --gray-700: #374151;
+  --navy:       #0D1B3E;
+  --navy-mid:   #1a2d5a;
+  --orange:     #E8610A;
+  --orange-lt:  #FFF0E8;
+  --gold:       #C9922A;
+  --gold-lt:    #FDF3E2;
+  --cream:      #F7F3ED;
+  --white:      #FFFFFF;
+  --gray-50:    #F9FAFB;
+  --gray-100:   #F3F4F6;
+  --gray-200:   #E5E7EB;
+  --gray-400:   #9CA3AF;
+  --gray-500:   #6B7280;
+  --gray-700:   #374151;
+  --gray-900:   #111827;
+  --green:      #15803D;
+  --green-lt:   #DCFCE7;
+  --red:        #DC2626;
+  --red-lt:     #FEE2E2;
+  --blue:       #1D4ED8;
+  --blue-lt:    #DBEAFE;
+  --yellow:     #B45309;
+  --yellow-lt:  #FEF3C7;
 
-  --font-display: 'Syne', sans-serif;
-  --font-body:    'DM Sans', sans-serif;
+  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-sm:  6px;
+  --radius:     10px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.10);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.12);
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.07), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:  0 12px 32px rgba(0,0,0,.12);
+
+  /* Greca — patrón escalonado inspirado en xicalcoliuhqui / piteado */
+  --greca: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='12'%3E%3Cpath d='M0,6 L6,6 L6,0 L12,0 L12,6 L18,6 L18,12 L24,12' stroke='%23C9922A' stroke-width='1.5' fill='none' stroke-linecap='square'/%3E%3C/svg%3E");
+
+  /* Diamante — trama piteado para fondos */
+  --diamond-bg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M12,2 L22,12 L12,22 L2,12 Z' fill='none' stroke='rgba(255,255,255,0.045)' stroke-width='1'/%3E%3C/svg%3E");
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+html { font-size: 16px; }
 
 body {
-  font-family: var(--font-body);
+  font-family: var(--font);
   background: var(--cream);
-  color: var(--navy);
-  line-height: 1.5;
-  min-height: 100dvh;
+  color: var(--gray-900);
+  min-height: 100vh;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 { font-family: var(--font-display); }
+.icon { display:inline-flex; align-items:center; justify-content:center; }
+.icon svg { width:20px; height:20px; stroke-width:1.75; }
+.icon-sm svg { width:16px; height:16px; }
+.icon-lg svg { width:24px; height:24px; }
+.icon-xl svg { width:32px; height:32px; }
 
-a { color: inherit; text-decoration: none; }
+.screen { display:none; flex-direction:column; min-height:100vh; }
+.screen.active { display:flex; }
 
-button { cursor: pointer; font-family: var(--font-body); }
+/* ─── UTILIDADES ─────────────────────────────────────────────── */
+.hidden       { display:none !important; }
+.mt-8         { margin-top:8px; }
+.mt-12        { margin-top:12px; }
+.color-orange { color:var(--orange); }
+.color-green  { color:var(--green); }
+.font-bold    { font-weight:700; }
+.text-right   { text-align:right; }
 
-input, select, textarea {
-  font-family: var(--font-body);
-  font-size: 1rem;
+/* ─── ANIMACIONES ─────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
 }
-
-img { display: block; max-width: 100%; }
+.screen.active .card             { animation:fadeUp .28s ease both; }
+.screen.active .card:nth-child(2){ animation-delay:.05s; }
+.screen.active .card:nth-child(3){ animation-delay:.10s; }
+.screen.active .tarifa-card             { animation:fadeUp .22s ease both; }
+.screen.active .tarifa-card:nth-child(2){ animation-delay:.04s; }
+.screen.active .tarifa-card:nth-child(3){ animation-delay:.08s; }
+.screen.active .tarifa-card:nth-child(4){ animation-delay:.12s; }

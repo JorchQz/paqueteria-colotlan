@@ -234,14 +234,14 @@ Cuando trabajes en este proyecto, usa estos agentes según la tarea:
 
 - [x] MVP visual completo en un solo HTML (mobile-first)
 - [x] Flujo completo mockeado: login → cotizar → checkout → rastreo → historial
-- [ ] Separar HTML en archivos CSS/JS modulares
-- [ ] Crear proyecto en Supabase + ejecutar schema
-- [ ] Integrar Supabase Auth
-- [ ] Integrar API Envia.com (sandbox primero)
-- [ ] Panel de operador (mostrador)
-- [ ] Generación real de PDF de ticket
-- [ ] Notificaciones WhatsApp
-- [ ] Deploy en Cloudflare Pages/Workers
+- [x] Separar HTML en archivos CSS/JS modulares
+- [x] Crear proyecto en Supabase + ejecutar schema
+- [x] Integrar Supabase Auth
+- [x] Integrar API Envia.com (sandbox primero)
+- [x] Panel de operador (mostrador)
+- [x] Generación real de PDF de ticket
+- [ ] Notificaciones WhatsApp (pendiente: requiere Twilio/WABA credentials)
+- [x] Deploy en Cloudflare Pages/Workers
 
 ---
 

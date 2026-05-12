@@ -1,96 +1,706 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel Operador — Paquetería Colotlán</title>
-  <link rel="stylesheet" href="assets/css/base.css" />
-  <link rel="stylesheet" href="assets/css/components.css" />
-  <link rel="stylesheet" href="assets/css/screens.css" />
-  <style>
-    .corte-stat {
-      background: #fff;
-      border-radius: var(--radius-md);
-      padding: 16px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-    }
-    .corte-stat__valor { font-family: var(--font-display); font-size: 1.8rem; font-weight: 700; color: var(--orange); }
-    .corte-stat__label { font-size: .8rem; color: var(--gray-500); margin-top: 2px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Operador — Paquetería Colotlán</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<link rel="stylesheet" href="assets/css/screens.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  body { max-width: 100%; background: var(--gray-100); }
+
+  /* ── Layout escritorio ── */
+  .op-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    background: var(--navy);
+    background-image: var(--diamond-bg);
+    display: flex; flex-direction: column;
+    padding: 0;
+    position: sticky; top: 0; height: 100vh;
+  }
+  .sidebar-brand {
+    padding: 24px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-logo {
+    width: 40px; height: 40px; background: var(--orange);
+    border-radius: var(--radius); display: flex; align-items: center; justify-content: center;
+    color: white; margin-bottom: 10px;
+  }
+  .sidebar-logo svg { width: 20px; height: 20px; }
+  .sidebar-title { font-size: 13px; font-weight: 800; color: white; }
+  .sidebar-sub   { font-size: 10px; color: var(--gold); letter-spacing: .8px; text-transform: uppercase; margin-top: 2px; }
+
+  .greca-sidebar { height: 8px; background-image: var(--greca); background-repeat: repeat-x; background-size: 24px 8px; }
+
+  .sidebar-nav { flex: 1; padding: 12px 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 20px; color: rgba(255,255,255,.55);
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: all .15s; border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover  { background: rgba(255,255,255,.06); color: rgba(255,255,255,.9); }
+  .nav-item.active { background: rgba(255,255,255,.1); color: white; }
+  .nav-item svg    { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-divider     { height: 1px; background: rgba(255,255,255,.07); margin: 8px 20px; }
+
+  .sidebar-user {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .sidebar-user-name  { font-size: 13px; font-weight: 600; color: white; }
+  .sidebar-user-role  { font-size: 11px; color: rgba(255,255,255,.4); margin-top: 2px; }
+  .sidebar-user-logout {
+    margin-top: 10px; padding: 7px 12px; background: rgba(220,38,38,.15);
+    border: 1px solid rgba(220,38,38,.3); border-radius: var(--radius-sm);
+    color: #fca5a5; font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; transition: background .15s;
+  }
+  .sidebar-user-logout:hover { background: rgba(220,38,38,.25); }
+  .sidebar-user-logout svg   { width: 13px; height: 13px; }
+
+  /* ── Main content ── */
+  .op-main { padding: 28px; overflow-y: auto; }
+
+  .page-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .page-sub   { font-size: 13px; color: var(--gray-500); margin-bottom: 24px; }
+
+  /* ── Stats row ── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: white; border-radius: var(--radius-lg);
+    padding: 18px 20px; box-shadow: var(--shadow-sm);
+  }
+  .stat-label { font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; color: var(--gray-500); margin-bottom: 8px; }
+  .stat-value { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .stat-value.orange { color: var(--orange); }
+  .stat-value.green  { color: var(--green); }
+  .stat-sub   { font-size: 11px; color: var(--gray-400); margin-top: 5px; }
+
+  /* ── Tabla envíos ── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .section-title { font-size: 14px; font-weight: 700; color: var(--navy); }
+
+  .tabla-envios { width: 100%; border-collapse: collapse; }
+  .tabla-envios thead tr { border-bottom: 2px solid var(--gray-200); }
+  .tabla-envios th {
+    text-align: left; padding: 10px 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: .5px;
+    text-transform: uppercase; color: var(--gray-500);
+  }
+  .tabla-envios tbody tr {
+    border-bottom: 1px solid var(--gray-100);
+    transition: background .1s;
+  }
+  .tabla-envios tbody tr:hover { background: var(--gray-50); }
+  .tabla-envios td { padding: 12px 14px; font-size: 13px; color: var(--gray-900); }
+  .tabla-envios td:last-child { text-align: right; }
+
+  .guia-chip {
+    font-family: monospace; font-size: 12px; font-weight: 700;
+    background: var(--gray-100); padding: 3px 8px; border-radius: 4px;
+    color: var(--navy); letter-spacing: .5px;
+  }
+
+  /* ── Panel rastreo lateral ── */
+  .track-panel {
+    background: white; border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm); padding: 20px;
+    margin-bottom: 20px;
+  }
+  .track-panel-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .track-panel-title svg { width: 15px; height: 15px; color: var(--gold); }
+  .track-input-row { display: flex; gap: 8px; }
+  .track-panel input {
+    flex: 1; padding: 9px 12px;
+    border: 1.5px solid var(--gray-200); border-radius: var(--radius-sm);
+    font-size: 13px; outline: none; font-family: var(--font);
+    transition: border-color .15s;
+  }
+  .track-panel input:focus { border-color: var(--navy); }
+  .track-panel .btn-sm { width: auto; padding: 9px 16px; }
+
+  .track-result {
+    margin-top: 14px; padding: 12px; background: var(--gray-50);
+    border-radius: var(--radius-sm); font-size: 12px; display: none;
+  }
+  .track-result.show { display: block; }
+
+  /* ── Acciones rápidas ── */
+  .quick-actions { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .action-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: none; transition: opacity .15s;
+  }
+  .action-btn svg { width: 15px; height: 15px; }
+  .action-btn.navy   { background: var(--navy);   color: white; }
+  .action-btn.orange { background: var(--orange);  color: white; }
+  .action-btn.ghost  { background: white; color: var(--navy); border: 1.5px solid var(--gray-200); }
+  .action-btn:hover  { opacity: .85; }
+
+  /* ── Acceso denegado / Login ── */
+  .op-login {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--navy); background-image: var(--diamond-bg);
+  }
+  .op-login-card {
+    background: white; border-radius: var(--radius-xl);
+    padding: 40px 36px; width: 100%; max-width: 380px;
+    box-shadow: var(--shadow-lg);
+  }
+  .op-login-icon {
+    width: 56px; height: 56px; background: var(--orange);
+    border-radius: var(--radius-lg); display: flex; align-items: center;
+    justify-content: center; color: white; margin-bottom: 20px;
+  }
+  .op-login-icon svg { width: 26px; height: 26px; }
+  .op-login-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 4px; }
+  .op-login-sub   { font-size: 13px; color: var(--gray-500); margin-bottom: 24px; }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .op-layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; flex-direction: row; flex-wrap: wrap; padding: 12px; }
+    .sidebar-brand { border: none; padding: 0 12px 0 0; }
+    .sidebar-nav { display: flex; flex-wrap: wrap; padding: 0; }
+    .nav-item { padding: 8px 12px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
 </head>
 <body>
 
-  <script>
-    window.__ENV__ = {
-      SUPABASE_URL: 'https://lligzxpgsnugzabaavpo.supabase.co',
-      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsaWd6eHBnc251Z3phYmFhdnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDkxNjAsImV4cCI6MjA5MzkyNTE2MH0.FhNl3CiCTDJOhftmd2TDflB4WjZIHqwtUaVwS3YgO2E',
-    };
-  </script>
+<div class="toast" id="toast"></div>
 
-  <!-- ── Header ─────────────────────────────────────── -->
-  <header class="app-header">
-    <img src="assets/img/logo.png" alt="Logo" class="app-header__logo" />
-    <span class="app-header__title">Panel Mostrador</span>
-    <button id="btn-logout" style="background:none;border:none;color:#fff;font-size:.85rem;">Salir</button>
-  </header>
-
-  <!-- ── Corte del día ──────────────────────────────── -->
-  <section style="padding:16px">
-    <h2 style="font-size:1rem;margin-bottom:12px">Corte del día</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
-      <div class="corte-stat">
-        <div class="corte-stat__valor" id="stat-envios">0</div>
-        <div class="corte-stat__label">Envíos hoy</div>
-      </div>
-      <div class="corte-stat">
-        <div class="corte-stat__valor" id="stat-total">$0</div>
-        <div class="corte-stat__label">Total cobrado</div>
+<!-- ═══ LOGIN / ACCESO DENEGADO ════════════════════════════════ -->
+<div class="op-login" id="op-login">
+  <div class="op-login-card">
+    <div class="op-login-icon"><i data-lucide="shield"></i></div>
+    <div class="op-login-title">Panel Operador</div>
+    <div class="op-login-sub">Ingresa con tu cuenta de operador</div>
+    <div class="field-grid-1">
+      <div class="field">
+        <div class="field-label">Correo electrónico</div>
+        <input class="field-input" id="op-email" type="email" placeholder="operador@colotlan.mx" />
       </div>
     </div>
-
-    <!-- Acciones rápidas -->
-    <h2 style="font-size:1rem;margin-bottom:12px">Acciones</h2>
-    <div class="operator-grid" style="padding:0">
-      <div class="operator-tile" id="tile-nuevo-envio">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Nuevo envío</span>
-      </div>
-      <div class="operator-tile" id="tile-rastrear">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <span>Rastrear guía</span>
-      </div>
-      <div class="operator-tile" id="tile-imprimir">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        <span>Imprimir ticket</span>
-      </div>
-      <div class="operator-tile" id="tile-corte">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <span>Corte PDF</span>
+    <div class="field-grid-1" style="margin-bottom:18px;">
+      <div class="field">
+        <div class="field-label">Contraseña</div>
+        <input class="field-input" id="op-password" type="password" placeholder="••••••••" />
       </div>
     </div>
-  </section>
+    <div id="op-login-error" class="field-error hidden" style="margin-bottom:12px;"></div>
+    <button class="btn btn-primary" id="btn-op-login" onclick="opLogin()">
+      <i data-lucide="log-in"></i> Entrar al panel
+    </button>
+  </div>
+</div>
 
-  <!-- ── Lista envíos del día ───────────────────────── -->
-  <section style="padding:0 16px 100px">
-    <h2 style="font-size:1rem;margin-bottom:12px">Envíos de hoy</h2>
-    <div id="lista-envios-dia">
-      <p style="color:var(--gray-500);font-size:.9rem">Sin envíos registrados hoy.</p>
+<!-- ═══ PANEL PRINCIPAL ════════════════════════════════════════ -->
+<div id="op-panel" class="hidden">
+<div class="op-layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-logo"><i data-lucide="package"></i></div>
+      <div class="sidebar-title">Paquetería Colotlán</div>
+      <div class="sidebar-sub">Panel Operador</div>
     </div>
-  </section>
+    <div class="greca-sidebar"></div>
 
-  <div id="toast" class="toast"></div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showSection('dashboard', this)">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+      </button>
+      <button class="nav-item" onclick="showSection('envios', this)">
+        <i data-lucide="clipboard-list"></i> Envíos del día
+      </button>
+      <button class="nav-item" onclick="showSection('rastrear', this)">
+        <i data-lucide="map-pin"></i> Rastrear guía
+      </button>
+      <div class="nav-divider"></div>
+      <button class="nav-item" onclick="window.open('index.html','_blank')">
+        <i data-lucide="plus-circle"></i> Nuevo envío
+      </button>
+      <button class="nav-item" onclick="generarCortePDF()">
+        <i data-lucide="printer"></i> Corte del día PDF
+      </button>
+    </nav>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script type="module">
-    import { supabase, logout } from './assets/js/auth.js';
-    import { toast } from './assets/js/app.js';
-    import { generarTicket } from './assets/js/pdf.js';
+    <div class="sidebar-user">
+      <div class="sidebar-user-name" id="op-user-name">—</div>
+      <div class="sidebar-user-role">Operador de mostrador</div>
+      <button class="sidebar-user-logout" onclick="opLogout()">
+        <i data-lucide="log-out"></i> Cerrar sesión
+      </button>
+    </div>
+  </aside>
 
-    document.getElementById('btn-logout').addEventListener('click', logout);
-    document.getElementById('tile-nuevo-envio').addEventListener('click', () => {
-      window.location.href = 'index.html';
-    });
-  </script>
+  <!-- ── Contenido principal ── -->
+  <main class="op-main">
+
+    <!-- DASHBOARD -->
+    <section id="section-dashboard">
+      <div class="page-title">Buenos días, <span id="op-nombre">Operador</span></div>
+      <div class="page-sub" id="op-fecha">—</div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Envíos hoy</div>
+          <div class="stat-value" id="stat-envios-hoy">0</div>
+          <div class="stat-sub">registrados este día</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total cobrado</div>
+          <div class="stat-value orange" id="stat-total-hoy">$0</div>
+          <div class="stat-sub">suma del día</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Efectivo</div>
+          <div class="stat-value green" id="stat-efectivo">$0</div>
+          <div class="stat-sub">pagos en efectivo</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Transferencia</div>
+          <div class="stat-value" id="stat-transferencia">$0</div>
+          <div class="stat-sub">pagos digitales</div>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="quick-actions">
+        <button class="action-btn navy" onclick="window.open('index.html','_blank')">
+          <i data-lucide="plus"></i> Nuevo envío
+        </button>
+        <button class="action-btn orange" onclick="generarCortePDF()">
+          <i data-lucide="printer"></i> Imprimir corte
+        </button>
+        <button class="action-btn ghost" onclick="cargarEnviosDia()">
+          <i data-lucide="refresh-cw"></i> Actualizar
+        </button>
+      </div>
+
+      <!-- Últimos envíos del día (resumen) -->
+      <div style="background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
+        <div class="section-header" style="padding:18px 20px 0;">
+          <div class="section-title">Últimos envíos del día</div>
+          <button class="action-btn ghost" style="padding:6px 12px;font-size:12px;" onclick="showSection('envios', document.querySelectorAll('.nav-item')[1])">
+            Ver todos
+          </button>
+        </div>
+        <div id="tabla-resumen-container" style="padding:0 0 4px;">
+          <table class="tabla-envios">
+            <thead>
+              <tr>
+                <th>Guía</th>
+                <th>Destinatario</th>
+                <th>Carrier</th>
+                <th>Pago</th>
+                <th style="text-align:right;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-resumen">
+              <tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:24px;">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENVÍOS DEL DÍA -->
+    <section id="section-envios" class="hidden">
+      <div class="page-title">Envíos del día</div>
+      <div class="page-sub">Todos los envíos registrados hoy</div>
+
+      <div class="quick-actions">
+        <button class="action-btn ghost" onclick="cargarEnviosDia()">
+          <i data-lucide="refresh-cw"></i> Actualizar
+        </button>
+        <button class="action-btn orange" onclick="generarCortePDF()">
+          <i data-lucide="printer"></i> Imprimir corte
+        </button>
+      </div>
+
+      <div style="background:white;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;">
+        <table class="tabla-envios">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Guía</th>
+              <th>Remitente</th>
+              <th>Destinatario</th>
+              <th>Destino</th>
+              <th>Carrier</th>
+              <th>Entrega</th>
+              <th>Pago</th>
+              <th style="text-align:right;">Total</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-envios-dia">
+            <tr><td colspan="9" style="text-align:center;color:var(--gray-400);padding:24px;">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RASTREAR -->
+    <section id="section-rastrear" class="hidden">
+      <div class="page-title">Rastrear guía</div>
+      <div class="page-sub">Consulta el estatus actualizado de cualquier envío</div>
+
+      <div style="max-width:600px;">
+        <div class="track-panel">
+          <div class="track-panel-title"><i data-lucide="search"></i> Número de guía</div>
+          <div class="track-input-row">
+            <input id="op-guia-input" placeholder="EST-2025-12345" maxlength="30"
+              onkeydown="if(event.key==='Enter') opRastrear()" />
+            <button class="btn btn-primary btn-sm" onclick="opRastrear()">
+              <i data-lucide="search"></i> Buscar
+            </button>
+          </div>
+          <div class="track-result" id="op-track-result"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+</div><!-- /op-panel -->
+
+<script>
+// ════════════════════════════════════════════════════
+// SUPABASE
+// ════════════════════════════════════════════════════
+const { createClient } = supabase;
+const sb = createClient(
+  'https://lligzxpgsnugzabaavpo.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsaWd6eHBnc251Z3phYmFhdnBvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDkxNjAsImV4cCI6MjA5MzkyNTE2MH0.FhNl3CiCTDJOhftmd2TDflB4WjZIHqwtUaVwS3YgO2E'
+);
+
+let perfil = null;
+let enviosDia = [];
+
+const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8787/api'
+  : '/api';
+
+// ════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════
+(async () => {
+  lucide.createIcons();
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return mostrarLogin();
+
+  const { data: p } = await sb.from('usuarios').select('*').eq('id', session.user.id).single();
+  if (!p || !['operador','admin'].includes(p.rol)) {
+    mostrarLogin('Acceso restringido. Se requiere rol de operador.');
+    await sb.auth.signOut();
+    return;
+  }
+  perfil = p;
+  mostrarPanel();
+})();
+
+function mostrarLogin(msg) {
+  document.getElementById('op-login').classList.remove('hidden');
+  if (msg) {
+    const err = document.getElementById('op-login-error');
+    err.textContent = msg;
+    err.classList.remove('hidden');
+  }
+  lucide.createIcons();
+}
+
+function mostrarPanel() {
+  document.getElementById('op-login').classList.add('hidden');
+  document.getElementById('op-panel').classList.remove('hidden');
+
+  document.getElementById('op-user-name').textContent = `${perfil.nombre} ${perfil.apellido || ''}`.trim();
+  document.getElementById('op-nombre').textContent     = perfil.nombre;
+
+  const ahora = new Date();
+  document.getElementById('op-fecha').textContent =
+    ahora.toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  cargarEnviosDia();
+  lucide.createIcons();
+}
+
+// ════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════
+async function opLogin() {
+  const email    = document.getElementById('op-email').value.trim();
+  const password = document.getElementById('op-password').value;
+  const errEl    = document.getElementById('op-login-error');
+  errEl.classList.add('hidden');
+  if (!email || !password) { errEl.textContent = 'Completa todos los campos.'; errEl.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('btn-op-login');
+  btn.disabled = true;
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  btn.disabled = false;
+
+  if (error) {
+    errEl.textContent = 'Credenciales incorrectas.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  const { data: p } = await sb.from('usuarios').select('*').eq('id', data.user.id).single();
+  if (!p || !['operador','admin'].includes(p.rol)) {
+    await sb.auth.signOut();
+    errEl.textContent = 'Tu cuenta no tiene acceso al panel de operador.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  perfil = p;
+  mostrarPanel();
+}
+
+async function opLogout() {
+  await sb.auth.signOut();
+  perfil = null;
+  enviosDia = [];
+  document.getElementById('op-panel').classList.add('hidden');
+  document.getElementById('op-login').classList.remove('hidden');
+  document.getElementById('op-email').value = '';
+  document.getElementById('op-password').value = '';
+  lucide.createIcons();
+}
+
+// ════════════════════════════════════════════════════
+// DATOS
+// ════════════════════════════════════════════════════
+async function cargarEnviosDia() {
+  const hoy = new Date();
+  const inicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).toISOString();
+  const fin    = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59).toISOString();
+
+  const { data, error } = await sb
+    .from('envios')
+    .select('*')
+    .gte('created_at', inicio)
+    .lte('created_at', fin)
+    .order('created_at', { ascending: false });
+
+  if (error) { showToast('Error al cargar envíos'); return; }
+  enviosDia = data || [];
+  actualizarStats();
+  renderTablaResumen();
+  renderTablaCompleta();
+}
+
+function actualizarStats() {
+  const total         = enviosDia.reduce((s, e) => s + Number(e.precio), 0);
+  const efectivo      = enviosDia.filter(e => e.metodo_pago === 'efectivo').reduce((s, e) => s + Number(e.precio), 0);
+  const transferencia = enviosDia.filter(e => e.metodo_pago !== 'efectivo').reduce((s, e) => s + Number(e.precio), 0);
+
+  document.getElementById('stat-envios-hoy').textContent   = enviosDia.length;
+  document.getElementById('stat-total-hoy').textContent    = `$${total.toFixed(0)}`;
+  document.getElementById('stat-efectivo').textContent     = `$${efectivo.toFixed(0)}`;
+  document.getElementById('stat-transferencia').textContent = `$${transferencia.toFixed(0)}`;
+}
+
+function renderTablaResumen() {
+  const tbody  = document.getElementById('tbody-resumen');
+  const recent = enviosDia.slice(0, 5);
+  if (!recent.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray-400);padding:24px;">Sin envíos registrados hoy.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = recent.map(e => `
+    <tr>
+      <td><span class="guia-chip">${e.guia}</span></td>
+      <td>${e.destinatario_nombre || '—'}</td>
+      <td>${e.carrier}</td>
+      <td>${e.metodo_pago === 'efectivo' ? 'Efectivo' : 'Transferencia'}</td>
+      <td style="font-weight:700;color:var(--orange);">$${Number(e.precio).toFixed(0)}</td>
+    </tr>`).join('');
+}
+
+function renderTablaCompleta() {
+  const tbody = document.getElementById('tbody-envios-dia');
+  if (!enviosDia.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--gray-400);padding:24px;">Sin envíos registrados hoy.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = enviosDia.map(e => {
+    const hora = new Date(e.created_at).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    const entrega = e.modo_entrega === 'recoleccion' ? '🏠 Recolección' : '🏢 Oficina';
+    const pago    = e.metodo_pago === 'efectivo' ? 'Efectivo' : 'Transferencia';
+    return `
+      <tr>
+        <td style="color:var(--gray-500);">${hora}</td>
+        <td><span class="guia-chip">${e.guia}</span></td>
+        <td>${e.remitente_nombre || '—'}</td>
+        <td>${e.destinatario_nombre || '—'}</td>
+        <td>${e.ciudad_destino || e.cp_destino || '—'}</td>
+        <td>${e.carrier}</td>
+        <td style="font-size:12px;">${entrega}</td>
+        <td>${pago}</td>
+        <td style="font-weight:700;color:var(--orange);">$${Number(e.precio).toFixed(0)}</td>
+      </tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════════════════════
+// RASTREO
+// ════════════════════════════════════════════════════
+async function opRastrear() {
+  const guia = document.getElementById('op-guia-input').value.trim().toUpperCase();
+  if (!guia) return;
+  const result = document.getElementById('op-track-result');
+  result.className = 'track-result show';
+  result.innerHTML = '<span style="color:var(--gray-500);">Consultando...</span>';
+
+  try {
+    const res  = await fetch(`${API_BASE}/tracking?guia=${encodeURIComponent(guia)}`);
+    const data = await res.json();
+    if (!res.ok || !data.data?.length) {
+      result.innerHTML = `<span style="color:var(--red);">No se encontró información para esta guía.</span>`;
+      return;
+    }
+    const ev = data.data;
+    result.innerHTML = `
+      <div style="font-weight:700;margin-bottom:8px;color:var(--navy);">${guia}</div>
+      ${ev.map(e => `
+        <div style="display:flex;gap:10px;margin-bottom:6px;align-items:flex-start;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--orange);margin-top:4px;flex-shrink:0;"></div>
+          <div>
+            <div style="font-size:12px;font-weight:600;">${e.description || e.status}</div>
+            <div style="font-size:11px;color:var(--gray-500);">${e.location || ''} · ${e.date || ''}</div>
+          </div>
+        </div>`).join('')}`;
+  } catch {
+    result.innerHTML = '<span style="color:var(--red);">Sin conexión al servidor.</span>';
+  }
+}
+
+// ════════════════════════════════════════════════════
+// CORTE PDF
+// ════════════════════════════════════════════════════
+function generarCortePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc   = new jsPDF();
+  const hoy   = new Date().toLocaleDateString('es-MX', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const total = enviosDia.reduce((s, e) => s + Number(e.precio), 0);
+  const ef    = enviosDia.filter(e => e.metodo_pago === 'efectivo').reduce((s, e) => s + Number(e.precio), 0);
+  const tr    = enviosDia.filter(e => e.metodo_pago !== 'efectivo').reduce((s, e) => s + Number(e.precio), 0);
+
+  let y = 20;
+
+  // Encabezado
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Paqueteria Colotlan AP', 105, y, { align: 'center' }); y += 7;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text('Corte del dia — ' + hoy, 105, y, { align: 'center' }); y += 12;
+
+  // Separador
+  doc.setDrawColor(200); doc.line(15, y, 195, y); y += 8;
+
+  // Resumen
+  doc.setFontSize(11); doc.setFont(undefined, 'bold');
+  doc.text('RESUMEN', 15, y); y += 7;
+  doc.setFont(undefined, 'normal'); doc.setFontSize(10);
+  doc.text(`Total de envios:    ${enviosDia.length}`, 20, y); y += 6;
+  doc.text(`Total cobrado:      $${total.toFixed(2)} MXN`, 20, y); y += 6;
+  doc.text(`Efectivo:           $${ef.toFixed(2)} MXN`, 20, y); y += 6;
+  doc.text(`Transferencia:      $${tr.toFixed(2)} MXN`, 20, y); y += 10;
+
+  doc.line(15, y, 195, y); y += 8;
+
+  // Tabla de envíos
+  doc.setFont(undefined, 'bold'); doc.setFontSize(10);
+  doc.text('DETALLE DE ENVIOS', 15, y); y += 7;
+
+  // Cabecera tabla
+  doc.setFillColor(240, 240, 240);
+  doc.rect(15, y - 4, 180, 8, 'F');
+  doc.setFont(undefined, 'bold'); doc.setFontSize(8);
+  doc.text('GUIA',       18, y);
+  doc.text('DESTINATARIO', 60, y);
+  doc.text('CARRIER',    115, y);
+  doc.text('PAGO',       145, y);
+  doc.text('TOTAL',      172, y);
+  y += 6;
+
+  doc.setFont(undefined, 'normal');
+  for (const e of enviosDia) {
+    if (y > 270) { doc.addPage(); y = 20; }
+    const nombre = (e.destinatario_nombre || '—').substring(0, 22);
+    const pago   = e.metodo_pago === 'efectivo' ? 'Efectivo' : 'Transfer.';
+    doc.setDrawColor(230); doc.line(15, y, 195, y);
+    y += 4;
+    doc.text(e.guia.substring(0, 18), 18, y);
+    doc.text(nombre, 60, y);
+    doc.text(e.carrier, 115, y);
+    doc.text(pago, 145, y);
+    doc.text(`$${Number(e.precio).toFixed(0)}`, 172, y);
+    y += 7;
+  }
+
+  y += 4;
+  doc.setDrawColor(200); doc.line(15, y, 195, y); y += 8;
+  doc.setFont(undefined, 'bold'); doc.setFontSize(10);
+  doc.text(`TOTAL: $${total.toFixed(2)} MXN`, 195, y, { align: 'right' });
+
+  // Footer
+  y += 12;
+  doc.setFont(undefined, 'normal'); doc.setFontSize(8); doc.setTextColor(150);
+  doc.text(`Generado por ${perfil?.nombre || 'Operador'} · ${new Date().toLocaleString('es-MX')}`, 105, y, { align: 'center' });
+
+  doc.save(`corte-${new Date().toISOString().split('T')[0]}.pdf`);
+  showToast('Corte PDF generado');
+}
+
+// ════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ════════════════════════════════════════════════════
+function showSection(name, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
+  document.getElementById('section-' + name)?.classList.remove('hidden');
+  lucide.createIcons();
+}
+
+// ════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
 </body>
 </html>

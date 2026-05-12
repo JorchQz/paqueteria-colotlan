@@ -75,9 +75,34 @@ export default {
       return proxyEnvia('/ship/cancel/', 'DELETE', request, env);
     }
 
+    // ── GET /api/cp/:codigo ─────────────────────────────────────
+    if (path.startsWith('/cp/') && request.method === 'GET') {
+      const cp = path.replace('/cp/', '').trim();
+      return handleCP(cp, env);
+    }
+
     return json({ error: 'Ruta no encontrada' }, 404);
   },
 };
+
+// ── Lookup código postal via copomex.com ─────────────────────
+async function handleCP(cp, env) {
+  if (!/^\d{5}$/.test(cp)) return json({ error: 'CP inválido' }, 400);
+  const res = await fetch(
+    `https://api.copomex.com/query/info_cp/${cp}?token=${env.COPOMEX_TOKEN}`,
+    { headers: { 'User-Agent': 'PaqueteriaColotlan/1.0' } }
+  );
+  if (!res.ok) return json({ error: 'CP no encontrado', status: res.status }, 404);
+  const data = await res.json();
+  // Devolver raw para depuración si falla el parseo
+  if (data.error || !data.response?.length) {
+    return json({ error: 'CP no encontrado', raw: data }, 404);
+  }
+  const r      = data.response[0];
+  const ciudad = r.d_ciudad || r.D_mnpio || '—';
+  const estado = r.d_estado || '—';
+  return json({ cp, ciudad: `${ciudad}, ${estado}` });
+}
 
 // ── Cotizador: consulta los 4 carriers en paralelo ───────────
 async function handleRate(request, env) {
